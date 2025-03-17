@@ -7,7 +7,7 @@ class ProfileResponse(BaseModel):
 
 class ProfileUpdateRequest(BaseModel):
     fullname: Optional[str] = None
-    bio: Optional[str] = None
+    password: Optional[str] = None
     avatar_url: Optional[str] = None
 
 class PlaylistResponse(BaseModel):
