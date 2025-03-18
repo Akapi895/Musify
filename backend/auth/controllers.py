@@ -41,7 +41,8 @@ async def get_session_user_id():
     async with session_lock:
         if session_tasks:
             return list(session_tasks.keys())[0]  # Lấy user đầu tiên
-        return None
+        # return None
+        return 1
 
 @router.get("/user_id")
 async def get_user_id():
@@ -50,7 +51,7 @@ async def get_user_id():
         raise HTTPException(status_code=401, detail="User not found in session")
     return {"user_id": user_id}
 
-# Thêm endpoint đăng xuất
+# endpoint đăng xuất
 @router.post("/logout")
 async def logout():
     async with session_lock:
