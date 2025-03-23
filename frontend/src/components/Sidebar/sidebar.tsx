@@ -82,8 +82,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, onLogout }) => {
         </button>
 
         <button 
-          className={`sidebar-item ${activePage === 'players' ? 'active' : ''}`}
-          onClick={() => navigate('/players')}
+          className={`sidebar-item ${activePage === 'myplayers' ? 'active' : ''}`}
+          onClick={() => navigate('/myplayers')}
         >
           <MusicNoteIcon />
           <span>My Players</span>

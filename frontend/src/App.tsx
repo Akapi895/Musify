@@ -4,6 +4,7 @@ import Profile from './pages/Profile/profile';
 import Home from './pages/Home/home';
 import Playlists from './pages/Playlists/playlists';
 import Favourites from './pages/Favourites/favourites';
+import MyPlayers from './pages/MyPlayers/myplayers';
 import Sidebar from './components/Sidebar/sidebar';
 import Login from './pages/Login/login';
 import Register from './pages/Register/register';
@@ -117,6 +118,10 @@ function App() {
               path="/players/:taskId"
               element={isAuthenticated ? <MainTasks /> : <Navigate to="/login" />}
             /> */}
+            <Route 
+              path="/myplayers" 
+              element={isAuthenticated ? <MyPlayers /> : <Navigate to="/login" />}
+            />
             <Route 
               path="/favourites" 
               element={isAuthenticated ? <Favourites /> : <Navigate to="/login" />}

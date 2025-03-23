@@ -3,7 +3,8 @@
     background-color: #121212;
     color: #fff;
     min-height: 100vh;
-    margin-left: 250px; /* Match sidebar width */
+    margin-left: 250px;
+    padding-bottom: 54px;
   }
   
   /* Profile Header with Avatar and Basic Info */
