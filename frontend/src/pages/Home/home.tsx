@@ -28,7 +28,7 @@ const Home: React.FC = () => {
         setIsLoading(true);
         
         // Fetch featured songs
-        const featuredResponse = await fetch('http://127.0.0.1:8000/api/player/featured', {
+        const featuredResponse = await fetch('http://127.0.0.1:8000/api/home/featured', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -36,7 +36,7 @@ const Home: React.FC = () => {
         });
         
         // Fetch new releases
-        const newReleasesResponse = await fetch('http://127.0.0.1:8000/api/player/new-releases', {
+        const newReleasesResponse = await fetch('http://127.0.0.1:8000/api/home/new-releases', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -44,7 +44,7 @@ const Home: React.FC = () => {
         });
         
         // Fetch top 5 favourites
-        const favouritesResponse = await fetch('http://127.0.0.1:8000/api/player/favorites/top?limit=5', {
+        const favouritesResponse = await fetch('http://127.0.0.1:8000/api/home/favorites/top?limit=5', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

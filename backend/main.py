@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Import các router từ các controllers
 from .auth.controllers import router as auth_router
-# from home.controllers import router as home_router
+from .home.controllers import router as home_router
 from .player.controllers import router as player_router
 from .profile.controllers import router as profile_router
 
@@ -29,7 +29,7 @@ def read_root():
 
 # Bao gồm các router từ các controllers
 app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
-# app.include_router(home_router, prefix="/api/home", tags=["Home"])
+app.include_router(home_router, prefix="/api/home", tags=["Home"])
 app.include_router(player_router, prefix="/api/player", tags=["Player"])
 app.include_router(profile_router, prefix="/api/profile", tags=["Profile"])
 
