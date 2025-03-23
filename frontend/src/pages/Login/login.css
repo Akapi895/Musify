@@ -1,0 +1,198 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+  background-color: #121212; /* Dark background matching other pages */
+}
+
+.login-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #181818; /* Dark card background */
+  padding: 40px;
+  border-radius: 10px;
+  width: 380px;
+  height: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  color: white; /* Light text for dark background */
+  transition: transform 0.3s ease;
+}
+
+.login-box:hover {
+  transform: translateY(-5px);
+}
+
+.login-box h2 {
+  font-size: 28px;
+  margin-bottom: 30px;
+  background: linear-gradient(to right, #1DB954, #1ed760);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.form-group {
+  display: flex;
+  margin: 15px 0;
+  align-items: center;
+  width: 100%;
+  background: #282828; /* Darker background for input fields */
+  padding: 12px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.form-group:focus-within {
+  box-shadow: 0 0 0 2px #1DB954; /* Green glow on focus */
+  background: #333;
+}
+
+.icon-box {
+  min-width: 40px;
+  height: 40px;
+  background-color: #1DB954; /* Spotify green */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.form-group input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 10px;
+  background: transparent;
+  width: 100%;
+  color: white; /* Light text */
+}
+
+.form-group input::placeholder {
+  color: #b3b3b3;
+}
+
+button {
+  font-weight: 600 !important;
+  display: block;
+  font-size: 16px;
+  height: 50px;
+  width: 100%;
+  padding: 10px;
+  background-color: #1DB954 !important; /* Spotify green */
+  color: black !important; /* Dark text on green button */
+  border: none !important;
+  border-radius: 30px !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 30px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+button:hover {
+  background-color: #1ed760 !important; /* Lighter green on hover */
+  transform: scale(1.05);
+}
+
+button:disabled {
+  background-color: #1DB95480 !important;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error-message {
+  color: #ff5252;
+  margin-bottom: 15px;
+  text-align: center;
+  background: rgba(255, 82, 82, 0.1);
+  padding: 10px;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.register-link {
+  font-size: 14px;
+  text-align: center;
+  margin-top: 20px;
+  color: #b3b3b3;
+}
+
+.register-link a {
+  font-weight: bold;
+  margin-left: 10px;
+  color: #1DB954; /* Spotify green */
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.register-link a:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #1DB954;
+  transition: width 0.3s ease;
+}
+
+.register-link a:hover {
+  color: #1ed760; /* Lighter green on hover */
+}
+
+.register-link a:hover:after {
+  width: 100%;
+}
+
+/* To match your loading spinner from other pages */
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  border-top-color: #000;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .login-box {
+    width: 90%;
+    padding: 30px 20px;
+  }
+  
+  .form-group {
+    padding: 10px;
+  }
+  
+  .icon-box {
+    min-width: 36px;
+    height: 36px;
+  }
+  
+  button {
+    height: 45px;
+    font-size: 14px;
+  }
+}

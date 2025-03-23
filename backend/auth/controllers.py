@@ -37,7 +37,7 @@ async def register(credentials: RegisterRequest):
     
     return {"status": "success", "data": {"user_id": user_id}}
 
-async def get_session_user_id():
+async def get_session_user_id(): # hardcoded
     async with session_lock:
         if session_tasks:
             return list(session_tasks.keys())[0]  # Lấy user đầu tiên
@@ -51,7 +51,6 @@ async def get_user_id():
         raise HTTPException(status_code=401, detail="User not found in session")
     return {"user_id": user_id}
 
-# endpoint đăng xuất
 @router.post("/logout")
 async def logout():
     async with session_lock:

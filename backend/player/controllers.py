@@ -10,7 +10,7 @@ from .services import (
     create_user_playlist, add_song_to_playlist, remove_song_from_playlist,
     get_playlist_songs, is_song_in_playlist
 )
-from .schemas import SongResponse, SongCreate, SongUpdate, PlaylistRequest, PlaylistResponse
+from .schemas import SongResponse, SongCreate, SongUpdate, PlaylistRequest, PlaylistResponse, SongListResponse
 
 router = APIRouter()
 
@@ -90,12 +90,12 @@ async def remove_song(player_id: int):
     }
 
 # tested
-@router.get("/user/songs", response_model=SongResponse)
+@router.get("/user/songs", response_model=SongListResponse)
 async def get_my_songs():
     user_id = await get_session_user_id()
     
     songs = await get_songs_by_user(user_id)
-    return {"status": "success", "data": {"songs": songs}}
+    return {"status": "success", "data": songs}
 
 # tested
 @router.post("/favorites/add/{player_id}", response_model=SongResponse)

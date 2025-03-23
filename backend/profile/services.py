@@ -22,7 +22,7 @@ async def get_user_profile(user_id: int) -> dict:
             "fullname": user[1],
             "email": user[2],
             "dob": user[3],
-            "avatar_url": profile[4]
+            "avatar_url": user[4]
         }
 
 # chưa dùng vội
@@ -55,7 +55,7 @@ async def get_user_playlists(user_id: int) -> list:
     async with aiosqlite.connect(DATABASE) as db:
         db.row_factory = aiosqlite.Row
         cursor = await db.execute(
-            "SELECT playlist_id, name "
+            "SELECT playlist_id, name, description "
             "FROM playlists WHERE user_id = ?",
             (user_id,)
         )
@@ -64,7 +64,7 @@ async def get_user_playlists(user_id: int) -> list:
         result = []
         for playlist in playlists:
             count_cursor = await db.execute(
-                "SELECT COUNT(*) FROM playlist_songs WHERE playlist_id = ?",
+                "SELECT COUNT(*) FROM connections WHERE playlist_id = ?",
                 (playlist['playlist_id'],)
             )
             song_count = await count_cursor.fetchone()
@@ -73,7 +73,6 @@ async def get_user_playlists(user_id: int) -> list:
                 "playlist_id": playlist['playlist_id'],
                 "name": playlist['name'],
                 "description": playlist['description'],
-                "created_at": playlist['created_at'],
                 "song_count": song_count[0]
             })
             

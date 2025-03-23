@@ -18,7 +18,7 @@ async def get_current_user_id():
     return user_id
 
 # API lấy thông tin profile
-@router.get("/", response_model=ProfileResponse)
+@router.get("/me", response_model=ProfileResponse)
 async def get_profile():
     user_id = await get_current_user_id()
     profile = await get_user_profile(user_id)

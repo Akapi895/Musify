@@ -19,6 +19,10 @@ class SongUpdate(BaseModel):
     file_url: Optional[str] = None
     lyrics: Optional[str] = None
 
+class SongListResponse(BaseModel):
+    status: str
+    data: list
+
 class SongResponse(BaseModel):
     status: str
     favor: bool
