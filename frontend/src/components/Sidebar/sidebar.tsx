@@ -90,11 +90,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, onLogout }) => {
         </button>
 
         <button 
-          className={`sidebar-item ${activePage === 'favorites' ? 'active' : ''}`}
-          onClick={() => navigate('/favorites')}
+          className={`sidebar-item ${activePage === 'favourites' ? 'active' : ''}`}
+          onClick={() => navigate('/favourites')}
         >
           <HeartIcon />
-          <span>Favorites</span>
+          <span>Favourites</span>
         </button>
 
         <button 

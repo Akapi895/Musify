@@ -101,52 +101,6 @@ export const SongItem: React.FC<SongProps> = ({
     );
   };
 
-// Song Row component (alternative layout for song tables)
-// export const SongRow: React.FC<SongProps> = ({ 
-//   player_id, 
-//   title, 
-//   artist, 
-//   duration,
-//   index,
-//   onClick 
-// }) => {
-//   const navigate = useNavigate();
-  
-//   const handleClick = () => {
-//     if (onClick) {
-//       onClick(player_id);
-//     } else {
-//       navigate(`/player/${player_id}`);
-//     }
-//   };
-  
-//   const formatDuration = (seconds?: number) => {
-//     if (!seconds) return "--:--";
-//     const min = Math.floor(seconds / 60);
-//     const sec = Math.floor(seconds % 60);
-//     return `${min}:${sec < 10 ? '0' + sec : sec}`;
-//   };
-  
-//   return (
-//     <div className="song-row" onClick={handleClick}>
-//       <div className="song-number">{index !== undefined ? index + 1 : ""}</div>
-//       <div className="song-title">{title}</div>
-//       <div className="song-artist">{artist}</div>
-//       <div className="song-duration">{duration ? formatDuration(duration) : "--:--"}</div>
-//     </div>
-//   );
-// };
-
-// Song Table Header component
-// export const SongTableHeader: React.FC = () => (
-//   <div className="song-header song-row">
-//     <div className="song-number">#</div>
-//     <div className="song-title">Title</div>
-//     <div className="song-artist">Artist</div>
-//     <div className="song-duration">Duration</div>
-//   </div>
-// );
-
 // A container for horizontal scrolling lists
 export const HorizontalScrollContainer: React.FC<{
   children: React.ReactNode;
@@ -155,12 +109,3 @@ export const HorizontalScrollContainer: React.FC<{
     {children}
   </div>
 );
-
-// A container for song tables
-// export const SongTable: React.FC<{
-//   children: React.ReactNode;
-// }> = ({ children }) => (
-//   <div className="songs-table">
-//     {children}
-//   </div>
-// );

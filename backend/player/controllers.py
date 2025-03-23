@@ -5,12 +5,12 @@ from datetime import datetime
 from ..auth.controllers import get_session_user_id
 from .services import (
     get_song_by_id, add_song, update_song, 
-    delete_song, get_songs_by_user,
+    delete_song, get_songs_by_user, 
     add_favorite, remove_favorite, get_favorites, is_favorite,
     create_user_playlist, add_song_to_playlist, remove_song_from_playlist,
-    get_playlist_songs, is_song_in_playlist
+    get_playlist_songs, is_song_in_playlist, get_playlists_all
 )
-from .schemas import SongResponse, SongCreate, SongUpdate, PlaylistRequest, PlaylistResponse, SongListResponse
+from .schemas import SongResponse, SongCreate, SongUpdate, PlaylistRequest, PlaylistResponse, SongListResponse, PlaylistSongResponse, FavoutiteResponse
 
 router = APIRouter()
 
@@ -129,7 +129,7 @@ async def unfavorite_song(player_id: int):
     }
 
 # tested
-@router.get("/favorites/all", response_model=SongResponse)
+@router.get("/favorites/all", response_model=FavoutiteResponse)
 async def get_favorite_songs():
     user_id = await get_session_user_id()
     
@@ -210,3 +210,20 @@ async def check_song_in_playlist(playlist_id: int, player_id: int):
         }
     }
 
+@router.get("/playlists/all", response_model=PlaylistSongResponse)
+async def get_all_playlists():  
+    playlists = await get_playlists_all()
+    for playlist in playlists:
+        # Get song count for each playlist
+        songs = await get_playlist_songs(playlist["playlist_id"])
+        playlist["song_count"] = len(songs)
+        
+        # Map playlist_id to id for frontend compatibility
+        playlist["id"] = playlist["playlist_id"]
+    
+    return {
+        "status": "success", 
+        "data": {
+            "playlists": playlists
+        }
+    }

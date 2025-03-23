@@ -1,0 +1,136 @@
+.playlists-container {
+  padding: 30px;
+  background-color: #121212;
+  color: #fff;
+  min-height: 100vh;
+  margin-left: 250px; /* Match sidebar width */
+}
+
+.playlists-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.playlists-header h1 {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0;
+  background: linear-gradient(to right, #1DB954, #1ed760);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  width: 900%;
+}
+
+.playlists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+  padding: 10px 0;
+}
+
+.create-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  background-color: #1DB954;
+  color: #000;
+}
+
+.create-button:hover {
+  background-color: #1ed760;
+  transform: scale(1.05);
+}
+
+.secondary-button {
+  padding: 12px 24px;
+  margin-top: 15px;
+  border: 1px solid #1DB954;
+  border-radius: 30px;
+  background-color: transparent;
+  color: #1DB954;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondary-button:hover {
+  background-color: rgba(29, 185, 84, 0.1);
+}
+
+.loading-spinner-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(29, 185, 84, 0.3);
+  border-radius: 50%;
+  border-top-color: #1DB954;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-message {
+  background-color: rgba(255, 69, 58, 0.1);
+  color: #ff453a;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.no-content-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background-color: #181818;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.no-content-message p {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #b3b3b3;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .playlists-container {
+    margin-left: 0;
+    padding: 20px;
+  }
+  
+  .playlists-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .playlists-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+}

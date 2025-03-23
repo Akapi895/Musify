@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Profile from './pages/Profile/profile';
 import Home from './pages/Home/home';
-// import Player from './pages/Player/player';
+import Playlists from './pages/Playlists/playlists';
+import Favourites from './pages/Favourites/favourites';
 import Sidebar from './components/Sidebar/sidebar';
 import Login from './pages/Login/login';
 import Register from './pages/Register/register';
@@ -116,7 +117,14 @@ function App() {
               path="/players/:taskId"
               element={isAuthenticated ? <MainTasks /> : <Navigate to="/login" />}
             /> */}
-
+            <Route 
+              path="/favourites" 
+              element={isAuthenticated ? <Favourites /> : <Navigate to="/login" />}
+            />
+            <Route 
+              path="/playlists" 
+              element={isAuthenticated ? <Playlists /> : <Navigate to="/login" />}
+            />
             {/* Trang gốc / */}
             <Route 
               path="/" 

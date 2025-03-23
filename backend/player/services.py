@@ -302,3 +302,11 @@ async def is_song_in_playlist(playlist_id: int, player_id: int) -> bool:
         )
         result = await cursor.fetchone()
         return result is not None
+    
+async def get_playlists_all() -> list:
+    async with aiosqlite.connect(DATABASE) as db:
+        db.row_factory = aiosqlite.Row
+        cursor = await db.execute("SELECT * FROM playlists")
+        playlists = await cursor.fetchall()
+        
+        return [dict(playlist) for playlist in playlists]

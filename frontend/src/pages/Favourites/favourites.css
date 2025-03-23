@@ -1,0 +1,115 @@
+.favourites-container {
+  padding: 30px;
+  background-color: #121212;
+  color: #fff;
+  min-height: 100vh;
+  margin-left: 250px; /* Match sidebar width */
+}
+
+.favourites-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.favourites-header h1 {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0;
+  background: linear-gradient(to right, #E91E63, #FF5722);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.songs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+  padding: 10px 0;
+}
+
+.secondary-button {
+  padding: 12px 24px;
+  margin-top: 15px;
+  border: 1px solid #E91E63;
+  border-radius: 30px;
+  background-color: transparent;
+  color: #E91E63;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondary-button:hover {
+  background-color: rgba(233, 30, 99, 0.1);
+}
+
+.loading-spinner-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(233, 30, 99, 0.3);
+  border-radius: 50%;
+  border-top-color: #E91E63;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-message {
+  background-color: rgba(255, 69, 58, 0.1);
+  color: #ff453a;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.no-content-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background-color: #181818;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.no-content-message p {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #b3b3b3;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .favourites-container {
+    margin-left: 0;
+    padding: 20px;
+  }
+  
+  .favourites-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .songs-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+}

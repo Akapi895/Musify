@@ -34,3 +34,11 @@ class PlaylistRequest(BaseModel):
 class PlaylistResponse(BaseModel):
     status: str
     data: Dict
+
+class PlaylistSongResponse(BaseModel):
+    status: str
+    data: Dict[str, list]
+
+class FavoutiteResponse(BaseModel):
+    status: str
+    data: Dict[str, list]
