@@ -202,7 +202,7 @@ const Profile = () => {
         <h2>Your Songs</h2>
         <button 
           className="create-button"
-          onClick={() => navigate('/player/upload')}
+          onClick={() => navigate('/upload')}
         >
           <span style={{ fontSize: "1.5em" }}>+</span> Upload Song
         </button>

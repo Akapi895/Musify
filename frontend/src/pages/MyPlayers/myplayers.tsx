@@ -60,7 +60,7 @@ const MyPlayers = () => {
   };
 
   const handleUploadSong = () => {
-    navigate('/player/upload');
+    navigate('/upload');
   };
 
   return (

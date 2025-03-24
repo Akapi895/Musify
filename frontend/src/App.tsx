@@ -10,6 +10,7 @@ import SinglePlaylist from './pages/SinglePlaylist/singleplaylist';
 import SinglePlayer from './pages/SinglePlayer/singleplayer';
 import Login from './pages/Login/login';
 import Register from './pages/Register/register';
+import Upload from './pages/Upload/upload';
 import './App.css';
 
 function App() {
@@ -105,12 +106,6 @@ function App() {
               path="/profile" 
               element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}
             />
-            {/*
-            Route cho danh sách Tasks (MainTasks)
-            <Route
-              path="/tasks"
-              element={isAuthenticated ? <MainTasks /> : <Navigate to="/login" />}
-            />*/}
             <Route 
               path="/playlist/:playlistId" 
               element={isAuthenticated ? <SinglePlaylist /> : <Navigate to="/login" />}
@@ -130,6 +125,10 @@ function App() {
             <Route 
               path="/playlists" 
               element={isAuthenticated ? <Playlists /> : <Navigate to="/login" />}
+            />
+            <Route 
+              path="/upload" 
+              element={isAuthenticated ? <Upload /> : <Navigate to="/login" />}
             />
             {/* Trang gốc / */}
             <Route 

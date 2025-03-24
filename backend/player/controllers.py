@@ -2,6 +2,10 @@ from fastapi import APIRouter, HTTPException, Depends, Query, File, UploadFile, 
 from typing import Optional, List, Dict
 from pydantic import BaseModel
 from datetime import datetime
+import uuid
+import os
+import shutil
+from pathlib import Path
 from ..auth.controllers import get_session_user_id
 from .services import (
     get_song_by_id, add_song, update_song, 
@@ -24,7 +28,11 @@ async def get_song(player_id: int):
     return {"status": "success", "data": song}
 
 # tested
-@router.post("/create", response_model=SongResponse)
+class CreateSongResponse(BaseModel):
+    status: str
+    data: dict
+
+@router.post("/create", response_model=CreateSongResponse)
 async def create_song(song: SongCreate):
     user_id = await get_session_user_id()
     
@@ -234,3 +242,198 @@ async def get_playlist_detail(playlist_id: int):
         "status": "success", 
         "data": playlist_detail
     }
+
+    
+@router.post("/upload-temp-file/", response_model=dict)
+async def upload_temp_file(file: UploadFile = File(...)):
+    """Upload a song file temporarily and return a session ID"""
+    try:
+        # Determine the absolute path of this file
+        current_file_path = Path(__file__).resolve()
+        
+        # Navigate to project root (from backend/player/controllers.py to project root)
+        project_root = current_file_path.parent.parent.parent
+        
+        # Create path to frontend assets
+        temp_dir = project_root / "frontend" / "src" / "assets" / "temp"
+        temp_dir.mkdir(parents=True, exist_ok=True)
+        
+        print(f"Temp directory path: {temp_dir}")
+        print(f"Temp directory exists: {temp_dir.exists()}")
+        
+        # Generate a unique session ID for this file
+        session_id = str(uuid.uuid4())
+        
+        # Extract file extension (with fallback)
+        file_ext = os.path.splitext(file.filename)[1]
+        if not file_ext:
+            file_ext = ".mp3"  # Default extension if none provided
+        
+        # Create a temp filename with the session ID
+        temp_filename = f"{session_id}{file_ext}"
+        temp_path = temp_dir / temp_filename
+        
+        # Save the file to temp location
+        print(f"Saving file to {temp_path}")
+        with open(temp_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        # Check if file was saved successfully
+        if temp_path.exists():
+            file_size = temp_path.stat().st_size
+            print(f"File saved successfully. Size: {file_size} bytes")
+        else:
+            print(f"WARNING: File not saved to {temp_path}")
+        
+        # For frontend access, we need a relative path
+        relative_path = f"../../assets/temp/{temp_filename}"
+        
+        return {
+            "status": "success", 
+            "data": {
+                "session_id": session_id,
+                "original_filename": file.filename,
+                "temp_path": relative_path
+            }
+        }
+    except Exception as e:
+        error_msg = f"File upload failed: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        raise HTTPException(status_code=500, detail=error_msg)
+
+class CommitFileRequest(BaseModel):
+    session_id: str
+    original_filename: str
+
+@router.post("/commit-file/", response_model=dict)
+async def commit_uploaded_file(request: CommitFileRequest):
+    """Move a temporarily uploaded file to the permanent location"""
+    try:
+        # Determine the absolute path of this file
+        current_file_path = Path(__file__).resolve()
+        
+        # Navigate to project root (from backend/player/controllers.py to project root)
+        project_root = current_file_path.parent.parent.parent
+        
+        # Create paths to frontend assets
+        temp_dir = project_root / "frontend" / "src" / "assets" / "temp"
+        songs_dir = project_root / "frontend" / "src" / "assets" / "songs"
+        
+        # Ensure songs directory exists
+        songs_dir.mkdir(parents=True, exist_ok=True)
+        
+        print(f"Looking for temp file with session ID: {request.session_id}")
+        print(f"Temp directory: {temp_dir}")
+        
+        # List all files in temp directory for debugging
+        print("Files in temp directory:")
+        for file_path in temp_dir.iterdir():
+            print(f" - {file_path.name}")
+        
+        # Find the temp file with the session ID
+        temp_files = list(temp_dir.glob(f"{request.session_id}.*"))
+        
+        if not temp_files or len(temp_files) == 0:
+            raise HTTPException(status_code=404, detail=f"Temporary file not found for session ID: {request.session_id}")
+        
+        # Use the first matching file (there should only be one)
+        temp_file = temp_files[0]
+        print(f"Found temp file: {temp_file}")
+        
+        # Get file extension from the temp file
+        file_ext = temp_file.suffix
+        if not file_ext:
+            file_ext = os.path.splitext(request.original_filename)[1]
+            if not file_ext:
+                file_ext = ".mp3"  # Default extension
+        
+        # Extract base name from original filename and normalize it
+        original_name = os.path.splitext(request.original_filename)[0]
+        
+        # Step 1: Remove accents/diacritics (for Vietnamese and other languages)
+        import unicodedata
+        normalized_name = unicodedata.normalize('NFKD', original_name)
+        normalized_name = ''.join([c for c in normalized_name if not unicodedata.combining(c)])
+        
+        # Step 2: Convert to lowercase and remove special characters
+        safe_name = "".join(c.lower() for c in normalized_name if c.isalnum() or c in "._- ")
+        
+        # Step 3: Replace spaces with underscores
+        safe_name = safe_name.replace(" ", "_")
+        
+        # Step 4: Replace multiple underscores with a single one
+        while "__" in safe_name:
+            safe_name = safe_name.replace("__", "_")
+        
+        # Step 5: Remove leading/trailing underscores
+        safe_name = safe_name.strip("_")
+        
+        # Step 6: Add timestamp to ensure uniqueness
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        permanent_filename = f"{safe_name}_{timestamp}{file_ext}"
+        
+        # Create full path for the permanent file
+        permanent_path = songs_dir / permanent_filename
+        
+        print(f"Moving file from {temp_file} to {permanent_path}")
+        
+        # Move the file from temp to permanent location
+        shutil.move(str(temp_file), str(permanent_path))
+        
+        # Check if the file was moved successfully
+        if not permanent_path.exists():
+            raise HTTPException(status_code=500, detail="Failed to move file to permanent location")
+        
+        print(f"File successfully moved. Size: {permanent_path.stat().st_size} bytes")
+        
+        # Return the relative path for the frontend
+        relative_path = f"../../assets/songs/{permanent_filename}"
+        
+        return {
+            "status": "success",
+            "data": {
+                "file_url": relative_path
+            }
+        }
+    except Exception as e:
+        error_msg = f"Failed to commit file: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        if isinstance(e, HTTPException):
+            raise
+        raise HTTPException(status_code=500, detail=error_msg)
+    
+class DeleteTempFileRequest(BaseModel):
+    session_id: str
+@router.post("/delete-temp-file/", response_model=dict)
+async def delete_temp_file(request: DeleteTempFileRequest):
+    """Delete a temporary file"""
+    try:
+        # Determine the absolute path of this file
+        current_file_path = Path(__file__).resolve()
+        
+        # Navigate to project root (from backend/player/controllers.py to project root)
+        project_root = current_file_path.parent.parent.parent
+        
+        # Create path to temp directory
+        temp_dir = project_root / "frontend" / "src" / "assets" / "temp"
+        
+        # Find the temp file with the session ID
+        temp_files = list(temp_dir.glob(f"{request.session_id}.*"))
+        
+        if not temp_files:
+            # Not finding the file is not an error - it might have been cleaned up already
+            return {"status": "success", "message": "No file found to delete"}
+        
+        # Delete all matching files (should typically be just one)
+        for temp_file in temp_files:
+            print(f"Removing temporary file: {temp_file}")
+            os.remove(temp_file)
+        
+        return {
+            "status": "success",
+            "message": f"Temporary file(s) deleted: {len(temp_files)}"
+        }
+    except Exception as e:
+        error_msg = f"Failed to delete temporary file: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        raise HTTPException(status_code=500, detail=error_msg)
