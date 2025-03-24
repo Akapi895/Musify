@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProfile, fetchPlaylists, createPlaylist, fetchUserSongs } from "./api";
 import "./profile.css";
@@ -117,7 +117,7 @@ const Profile = () => {
   };
 
   const handlePlaylistClick = (playlistId: number) => {
-    navigate(`/playlist/${playlistId}`);
+    navigate(`/playlist/${String(playlistId)}`);
   };
 
   return (
@@ -186,11 +186,11 @@ const Profile = () => {
         <HorizontalScrollContainer>
         {playlists.map((playlist) => (
           <PlaylistItem
-            key={playlist.id}
-            playlist_id={playlist.id}
-            name={playlist.name}
-            song_count={playlist.song_count}
-            onClick={handlePlaylistClick}
+          key={playlist.id}
+          playlist_id={playlist.id}
+          name={playlist.name}
+          song_count={playlist.song_count}
+          onClick={handlePlaylistClick}
           />
         ))}
       </HorizontalScrollContainer>

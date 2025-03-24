@@ -11,26 +11,11 @@ async def get_song_by_id(player_id: int) -> dict:
             (player_id,)
         )
         song = await cursor.fetchone()
-        
+                
         if not song:
             return None
             
         return dict(song)
-
-# chưa dùng
-async def search_songs(query: str, limit: int = 20) -> list:
-    """Tìm kiếm bài hát theo title hoặc artist"""
-    search_term = f"%{query}%"
-    
-    async with aiosqlite.connect(DATABASE) as db:
-        db.row_factory = aiosqlite.Row
-        cursor = await db.execute(
-            "SELECT * FROM songs WHERE title LIKE ? OR artist LIKE ? LIMIT ?",
-            (search_term, search_term, limit)
-        )
-        songs = await cursor.fetchall()
-        
-        return [dict(song) for song in songs]
 
 async def add_song(
     title: str,
@@ -310,3 +295,29 @@ async def get_playlists_all() -> list:
         playlists = await cursor.fetchall()
         
         return [dict(playlist) for playlist in playlists]
+    
+async def get_playlist_details(playlist_id: int) -> dict:
+    async with aiosqlite.connect(DATABASE) as db:
+        db.row_factory = aiosqlite.Row
+        
+        # Get basic playlist info
+        cursor = await db.execute(
+            """SELECT name, description, user_id 
+               FROM playlists
+               WHERE playlist_id = ?""",
+            (playlist_id,)
+        )
+        
+        playlist = await cursor.fetchone()
+        if not playlist:
+            return None
+            
+        # Convert to dictionary
+        playlist_dict = dict(playlist)
+        
+        # Get songs count
+        songs = await get_playlist_songs(playlist_id)
+        playlist_dict["song_count"] = len(songs)
+        print(playlist_dict)
+        
+        return playlist_dict

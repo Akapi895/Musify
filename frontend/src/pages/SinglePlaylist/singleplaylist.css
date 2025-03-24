@@ -1,0 +1,249 @@
+.singleplaylist-container {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #121212, #060606);
+  color: #fff;
+}
+
+.singleplaylist-content {
+  flex: 1;
+  padding: 30px;
+  margin-left: 250px; /* Match sidebar width */
+  transition: margin 0.3s ease;
+}
+
+/* Loading and error states */
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin-left: 250px;
+  padding: 0 30px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(29, 185, 84, 0.3);
+  border-radius: 50%;
+  border-top-color: #1DB954;
+  animation: spin 1s infinite linear;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-container h2 {
+  color: #ff4b4b;
+  margin-bottom: 10px;
+}
+
+.back-button {
+  padding: 10px 20px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 20px;
+  background-color: #1DB954;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  transform: scale(1.05);
+  background-color: #1ed760;
+}
+
+/* Playlist header section */
+.playlist-header {
+  display: flex;
+  margin-bottom: 30px;
+  align-items: center;
+}
+
+.playlist-cover {
+  width: 240px;
+  height: 240px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 30px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.playlist-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.playlist-info {
+  flex: 1;
+}
+
+.playlist-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.playlist-title {
+  font-size: 48px;
+  font-weight: 900;
+  margin: 0 0 10px 0;
+  line-height: 1.2;
+}
+
+.playlist-description {
+  font-size: 16px;
+  color: #b3b3b3;
+  margin-bottom: 15px;
+  max-width: 800px;
+}
+
+.playlist-meta {
+  font-size: 14px;
+  color: #b3b3b3;
+}
+
+.dot-separator {
+  margin: 0 8px;
+}
+
+.creator-name {
+  font-weight: 600;
+}
+
+/* Songs table */
+.songs-table-header {
+  display: grid;
+  grid-template-columns: 50px 2fr 1fr 100px;
+  gap: 10px;
+  padding: 0 15px 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #b3b3b3;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.songs-list {
+  margin-bottom: 30px;
+}
+
+.song-row {
+  display: grid;
+  gap: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  align-items: center;
+  
+  /* grid-template-columns: 50px 2fr 1fr 100px;
+  transition: all 0.2s;
+  padding: 12px 20px; */
+
+  grid-template-columns: 50px 1fr 1fr 100px;
+  padding: 12px 15px;
+  transition: background-color 0.2s;
+}
+
+.song-row:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.song-title-info {
+  display: flex;
+  align-items: center;
+}
+
+.song-cover {
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-right: 15px;
+}
+
+.song-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.song-number {
+  color: #b3b3b3;
+  font-size: 16px;
+}
+
+.song-row:hover .song-number {
+  color: #fff;
+}
+
+.song-title {
+  font-weight: 500;
+}
+
+.song-artist {
+  color: #b3b3b3;
+}
+
+.song-duration {
+  color: #b3b3b3;
+  text-align: right;
+}
+
+/* Empty playlist state */
+.empty-playlist {
+  padding: 40px 0;
+  text-align: center;
+  color: #b3b3b3;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .singleplaylist-content {
+    margin-left: 0;
+    padding: 20px;
+  }
+  
+  .loading-container, .error-container {
+    margin-left: 0;
+  }
+  
+  .playlist-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .playlist-cover {
+    margin: 0 auto 20px;
+    width: 180px;
+    height: 180px;
+  }
+  
+  .playlist-title {
+    font-size: 32px;
+  }
+  
+  .songs-table-header, .song-row {
+    grid-template-columns: 40px 2fr 1fr 60px;
+    gap: 5px;
+    font-size: 13px;
+  }
+  
+  .song-cover {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+  }
+}

@@ -27,6 +27,10 @@ class SongResponse(BaseModel):
     status: str
     favor: bool
 
+class OneSongResponse(BaseModel):
+    status: str
+    data: Dict
+
 class PlaylistRequest(BaseModel):
     name: str
     description: Optional[str] = None

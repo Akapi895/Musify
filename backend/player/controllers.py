@@ -5,22 +5,21 @@ from datetime import datetime
 from ..auth.controllers import get_session_user_id
 from .services import (
     get_song_by_id, add_song, update_song, 
-    delete_song, get_songs_by_user, 
+    delete_song, get_songs_by_user, get_playlist_details,
     add_favorite, remove_favorite, get_favorites, is_favorite,
     create_user_playlist, add_song_to_playlist, remove_song_from_playlist,
     get_playlist_songs, is_song_in_playlist, get_playlists_all
 )
-from .schemas import SongResponse, SongCreate, SongUpdate, PlaylistRequest, PlaylistResponse, SongListResponse, PlaylistSongResponse, FavoutiteResponse
+from .schemas import SongResponse, SongCreate, SongUpdate, PlaylistRequest, PlaylistResponse, SongListResponse, PlaylistSongResponse, FavoutiteResponse, OneSongResponse
 
 router = APIRouter()
 
 # tested
-@router.get("/{player_id}", response_model=SongResponse)
+@router.get("/songs/{player_id}", response_model=OneSongResponse)
 async def get_song(player_id: int):
-    song = await get_song_by_id(player_id)
-    
+    song = await get_song_by_id(player_id)    
     if not song:
-        raise HTTPException(status_code=404, detail="Song not found")
+        raise HTTPException(status_code=404, detail="Song not found oh no")
         
     return {"status": "success", "data": song}
 
@@ -109,9 +108,7 @@ async def favorite_song(player_id: int):
     
     return {
         "status": "success", 
-        "data": {
-            "message": "Song added to favorites"
-        }
+        "favor": True
     }
 
 # tested
@@ -123,9 +120,7 @@ async def unfavorite_song(player_id: int):
     
     return {
         "status": "success", 
-        "data": {
-            "message": "Song removed from favorites"
-        }
+        "favor": True
     }
 
 # tested
@@ -226,4 +221,16 @@ async def get_all_playlists():
         "data": {
             "playlists": playlists
         }
+    }
+
+@router.get("/playlists/one/{playlist_id}", response_model=PlaylistResponse)
+async def get_playlist_detail(playlist_id: int):
+    playlist_detail = await get_playlist_details(playlist_id)
+    
+    if not playlist_detail:
+        raise HTTPException(status_code=404, detail="Playlist not found")
+    
+    return {
+        "status": "success", 
+        "data": playlist_detail
     }

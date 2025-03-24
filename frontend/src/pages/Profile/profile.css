@@ -258,19 +258,6 @@
     overflow: hidden;
   }
   
-  .song-row {
-    display: grid;
-    grid-template-columns: 50px 1fr 1fr 100px;
-    align-items: center;
-    padding: 12px 20px;
-    transition: background-color 0.2s;
-    cursor: pointer;
-  }
-  
-  .song-row:not(.song-header):hover {
-    background-color: #282828;
-  }
-  
   .song-header {
     background-color: #282828;
     font-size: 14px;
@@ -278,16 +265,6 @@
     color: #b3b3b3;
     position: sticky;
     top: 0;
-  }
-  
-  .song-number {
-    text-align: center;
-  }
-  
-  .song-title {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
   
   .song-artist {
@@ -326,10 +303,6 @@
     .profile-avatar {
       margin-right: 0;
       margin-bottom: 20px;
-    }
-    
-    .song-row {
-      grid-template-columns: 40px 1fr 80px;
     }
     
     .song-artist {

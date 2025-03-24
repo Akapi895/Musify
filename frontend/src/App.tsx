@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Profile from './pages/Profile/profile';
 import Home from './pages/Home/home';
@@ -6,6 +6,8 @@ import Playlists from './pages/Playlists/playlists';
 import Favourites from './pages/Favourites/favourites';
 import MyPlayers from './pages/MyPlayers/myplayers';
 import Sidebar from './components/Sidebar/sidebar';
+import SinglePlaylist from './pages/SinglePlaylist/singleplaylist';
+import SinglePlayer from './pages/SinglePlayer/singleplayer';
 import Login from './pages/Login/login';
 import Register from './pages/Register/register';
 import './App.css';
@@ -103,21 +105,20 @@ function App() {
               path="/profile" 
               element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}
             />
-            {/* <Route 
-              path="/calendar" 
-              element={isAuthenticated ? <Calendar /> : <Navigate to="/login" />}
-            />
-
+            {/*
             Route cho danh sách Tasks (MainTasks)
             <Route
               path="/tasks"
               element={isAuthenticated ? <MainTasks /> : <Navigate to="/login" />}
+            />*/}
+            <Route 
+              path="/playlist/:playlistId" 
+              element={isAuthenticated ? <SinglePlaylist /> : <Navigate to="/login" />}
             />
-            Route cho Subtasks của 1 Task
-            <Route
-              path="/players/:taskId"
-              element={isAuthenticated ? <MainTasks /> : <Navigate to="/login" />}
-            /> */}
+            <Route 
+              path="/player/:playerId" 
+              element={isAuthenticated ? <SinglePlayer /> : <Navigate to="/login" />}
+            />
             <Route 
               path="/myplayers" 
               element={isAuthenticated ? <MyPlayers /> : <Navigate to="/login" />}
