@@ -14,11 +14,9 @@ async def get_featured_songs(limit: int = 10) -> List[Dict[str, Any]]:
     async with aiosqlite.connect(DATABASE) as db:
         db.row_factory = aiosqlite.Row
         
-        # In a real app, you might have a 'featured' flag or table
-        # For now, we'll just get some popular songs or recently added ones
         cursor = await db.execute(
             """SELECT p.player_id, p.title, p.artist, p.duration, 
-                    p.release_date, p.file_url, p.cover_url, p.lyrics
+                    p.release_date, p.file_url, p.lyrics
             FROM songs p
             ORDER BY RANDOM()
             LIMIT ?""",
@@ -81,12 +79,29 @@ async def get_top_favorites(limit: int = 5) -> List[Dict[str, Any]]:
             """,
             (limit,)
         )
-        
         songs = await cursor.fetchall()
-        
-        # If no favorites found, return random songs
         if not songs:
             return await get_featured_songs(limit)
         
-        # Convert to dictionaries
-        return [dict(song) for song in songs]
+        result_songs = [dict(song) for song in songs]
+
+        if len(result_songs) < limit:
+            # Get the player_ids we already have
+            existing_ids = {song['player_id'] for song in result_songs}
+            
+            # Calculate how many more songs we need
+            remaining_needed = limit - len(result_songs)
+            
+            # Get featured songs
+            featured_songs = await get_featured_songs(limit=limit*2)  
+            
+            # Filter out any songs that are already in our result
+            unique_featured_songs = [
+                song for song in featured_songs 
+                if song['player_id'] not in existing_ids
+            ]
+            
+            # Add the remaining needed songs
+            result_songs.extend(unique_featured_songs[:remaining_needed])
+        
+        return result_songs

@@ -20,7 +20,6 @@ class SongListResponse(BaseModel):
 # Featured songs endpoint
 @router.get("/featured", response_model=SongListResponse)
 async def featured_songs():
-    """Get featured songs for the home page"""
     try:
         songs = await get_featured_songs()
         return {"status": "success", "data": {"songs": songs}}

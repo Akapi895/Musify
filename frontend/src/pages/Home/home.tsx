@@ -1,18 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/sidebar';
-import { SongItem } from '../../components/MusicItems';
+import { SongItem, HorizontalScrollContainer } from '../../components/MusicItems';
 import './home.css';
 
 interface Song {
   id: number;
-  player_id?: number; // For compatibility with SongItem
+  player_id?: number;
   title: string;
   artist: string;
   cover?: string;
-  cover_url?: string; // For compatibility with SongItem
   duration?: number;
 }
+
+// Custom scroll controls component
+const ScrollControls: React.FC<{
+  scrollContainerId: string;
+}> = ({ scrollContainerId }) => {
+  const scrollLeft = () => {
+    const container = document.getElementById(scrollContainerId);
+    if (container) {
+      container.scrollBy({ left: -600, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    const container = document.getElementById(scrollContainerId);
+    if (container) {
+      container.scrollBy({ left: 600, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="scroll-controls">
+      <button className="scroll-button" onClick={scrollLeft} aria-label="Scroll left">
+        &#8592;
+      </button>
+      <button className="scroll-button" onClick={scrollRight} aria-label="Scroll right">
+        &#8594;
+      </button>
+    </div>
+  );
+};
 
 const Home: React.FC = () => {
   const [featuredSongs, setFeaturedSongs] = useState<Song[]>([]);
@@ -51,57 +80,26 @@ const Home: React.FC = () => {
           }
         });
 
-        // If backend API is still in progress, use sample data
-        if (!featuredResponse.ok || !newReleasesResponse.ok || !favouritesResponse.ok) {
-          console.log("Using sample data as API endpoints are not ready");
-          
-          // Sample featured songs
-          setFeaturedSongs([
-            { id: 1, player_id: 1, title: 'Shape of You', artist: 'Ed Sheeran', cover: 'https://placehold.co/300x300/1DB954/FFFFFF?text=Shape+of+You', cover_url: 'https://placehold.co/300x300/1DB954/FFFFFF?text=Shape+of+You' },
-            { id: 2, player_id: 2, title: 'Blinding Lights', artist: 'The Weeknd', cover: 'https://placehold.co/300x300/1DB954/FFFFFF?text=Blinding+Lights', cover_url: 'https://placehold.co/300x300/1DB954/FFFFFF?text=Blinding+Lights' },
-            { id: 3, player_id: 3, title: 'Bad Guy', artist: 'Billie Eilish', cover: 'https://placehold.co/300x300/1DB954/FFFFFF?text=Bad+Guy', cover_url: 'https://placehold.co/300x300/1DB954/FFFFFF?text=Bad+Guy' },
-            { id: 4, player_id: 4, title: 'Uptown Funk', artist: 'Mark Ronson ft. Bruno Mars', cover: 'https://placehold.co/300x300/1DB954/FFFFFF?text=Uptown+Funk', cover_url: 'https://placehold.co/300x300/1DB954/FFFFFF?text=Uptown+Funk' },
-          ]);
-          
-          // Sample new releases
-          setNewReleases([
-            { id: 5, player_id: 5, title: 'As It Was', artist: 'Harry Styles', cover: 'https://placehold.co/300x300/E91429/FFFFFF?text=As+It+Was', cover_url: 'https://placehold.co/300x300/E91429/FFFFFF?text=As+It+Was' },
-            { id: 6, player_id: 6, title: 'STAY', artist: 'The Kid LAROI, Justin Bieber', cover: 'https://placehold.co/300x300/E91429/FFFFFF?text=STAY', cover_url: 'https://placehold.co/300x300/E91429/FFFFFF?text=STAY' },
-            { id: 7, player_id: 7, title: 'Heat Waves', artist: 'Glass Animals', cover: 'https://placehold.co/300x300/E91429/FFFFFF?text=Heat+Waves', cover_url: 'https://placehold.co/300x300/E91429/FFFFFF?text=Heat+Waves' },
-            { id: 8, player_id: 8, title: 'Easy On Me', artist: 'Adele', cover: 'https://placehold.co/300x300/E91429/FFFFFF?text=Easy+On+Me', cover_url: 'https://placehold.co/300x300/E91429/FFFFFF?text=Easy+On+Me' },
-          ]);
-          
-          // Sample top 5 favourites
-          setTopFavourites([
-            { id: 9, player_id: 9, title: 'Bohemian Rhapsody', artist: 'Queen', cover: 'https://placehold.co/300x300/FFD700/000000?text=Bohemian+Rhapsody', cover_url: 'https://placehold.co/300x300/FFD700/000000?text=Bohemian+Rhapsody' },
-            { id: 10, player_id: 10, title: 'Billie Jean', artist: 'Michael Jackson', cover: 'https://placehold.co/300x300/FFD700/000000?text=Billie+Jean', cover_url: 'https://placehold.co/300x300/FFD700/000000?text=Billie+Jean' },
-            { id: 11, player_id: 11, title: 'Hotel California', artist: 'Eagles', cover: 'https://placehold.co/300x300/FFD700/000000?text=Hotel+California', cover_url: 'https://placehold.co/300x300/FFD700/000000?text=Hotel+California' },
-            { id: 12, player_id: 12, title: 'Imagine', artist: 'John Lennon', cover: 'https://placehold.co/300x300/FFD700/000000?text=Imagine', cover_url: 'https://placehold.co/300x300/FFD700/000000?text=Imagine' },
-            { id: 13, player_id: 13, title: 'Sweet Child O\' Mine', artist: 'Guns N\' Roses', cover: 'https://placehold.co/300x300/FFD700/000000?text=Sweet+Child', cover_url: 'https://placehold.co/300x300/FFD700/000000?text=Sweet+Child' },
-          ]);
-        } else {
-          // Parse actual responses from backend
-          const featuredData = await featuredResponse.json();
-          const newReleasesData = await newReleasesResponse.json();
-          const favouritesData = await favouritesResponse.json();
-          
-          setFeaturedSongs(featuredData.data.songs || []);
-          setNewReleases(newReleasesData.data.songs || []);
-          setTopFavourites(favouritesData.data.songs || []);
-        }
+        const featuredData = await featuredResponse.json();
+        const newReleasesData = await newReleasesResponse.json();
+        const favouritesData = await favouritesResponse.json();
+        
+        setFeaturedSongs(featuredData.data.songs || []);
+        setNewReleases(newReleasesData.data.songs || []);
+        setTopFavourites(favouritesData.data.songs || []);
       } catch (error) {
         console.error('Error fetching data:', error);
         // Use sample data as fallback
         setFeaturedSongs([
-          { id: 1, player_id: 1, title: 'Shape of You', artist: 'Ed Sheeran', cover_url: 'https://placehold.co/300x300/1DB954/FFFFFF?text=Shape+of+You' },
-          { id: 2, player_id: 2, title: 'Blinding Lights', artist: 'The Weeknd', cover_url: 'https://placehold.co/300x300/1DB954/FFFFFF?text=Blinding+Lights' },
+          { id: 1, player_id: 1, title: 'Shape of You', artist: 'Ed Sheeran'},
+          { id: 2, player_id: 2, title: 'Blinding Lights', artist: 'The Weeknd'},
         ]);
         setNewReleases([
-          { id: 5, player_id: 5, title: 'As It Was', artist: 'Harry Styles', cover_url: 'https://placehold.co/300x300/E91429/FFFFFF?text=As+It+Was' },
-          { id: 6, player_id: 6, title: 'STAY', artist: 'The Kid LAROI, Justin Bieber', cover_url: 'https://placehold.co/300x300/E91429/FFFFFF?text=STAY' },
+          { id: 5, player_id: 5, title: 'As It Was', artist: 'Harry Styles'},
+          { id: 6, player_id: 6, title: 'STAY', artist: 'The Kid LAROI, Justin Bieber'},
         ]);
         setTopFavourites([
-          { id: 9, player_id: 9, title: 'Bohemian Rhapsody', artist: 'Queen', cover_url: 'https://placehold.co/300x300/FFD700/000000?text=Bohemian+Rhapsody' },
+          { id: 9, player_id: 9, title: 'Bohemian Rhapsody', artist: 'Queen'},
         ]);
       } finally {
         setIsLoading(false);
@@ -135,44 +133,78 @@ const Home: React.FC = () => {
             <section className="top-favourites-section">
               <h2>Top 5 Favourite Songs</h2>
               <p className="section-description">Your most loved tracks</p>
-              <div className="song-grid">
-                {topFavourites.map(song => (
-                  <SongItem
-                    key={song.id || song.player_id}
-                    player_id={song.player_id || song.id}
-                    title={song.title}
-                    artist={song.artist}
-                    cover_url={song.cover_url || song.cover}
-                    duration={song.duration}
-                    onClick={handleSongClick}
-                  />
-                ))}
-                {topFavourites.length === 0 && (
-                  <div className="no-content-message">
-                    <p>Add songs to your favourites to see them here!</p>
+              <div className="two-column-container">
+                {/* Left column with heading and image */}
+                <div className="favourites-info-column">
+                  <div className="favourite-image-container">
+                    <img 
+                      src={'https://img.freepik.com/free-photo/earth-with-headphones-with-glittery-effect-black-background_1048-2890.jpg'} 
+                      alt="Top favourites" 
+                      className="favourite-cover-image" 
+                    />
+                    <div className="favourite-image-overlay">
+                      <div className="favourite-count">{topFavourites.length}</div>
+                      <div className="favourite-label">Top Tracks</div>
+                    </div>
                   </div>
-                )}
-              </div>
-              {topFavourites.length > 0 && (
-                <div className="view-more-container">
-                  <button className="view-more-button" onClick={() => navigate('/favourites')}>
-                    View All Favourites
-                  </button>
+                  {topFavourites.length > 0 && (
+                    <button className="view-more-button" onClick={() => navigate('/favourites')}>
+                      View Your Favourites
+                    </button>
+                  )}
                 </div>
-              )}
+                
+                {/* Right column with songs in vertical list */}
+                <div className="favourites-songs-column">
+                  {topFavourites.length > 0 ? (
+                    <div className="vertical-song-list">
+                      {topFavourites.map((song, index) => (
+                        <div 
+                          key={song.id || song.player_id} 
+                          className="vertical-song-item"
+                          onClick={() => handleSongClick(song.player_id || song.id)}
+                        >
+                          <div className="song-number">{index + 1}</div>
+                          <div className="song-image">
+                            <img src={'https://placehold.co/60x60/FFD700/000000?text=Song'} alt={song.title} />
+                          </div>
+                          <div className="song-info">
+                            <div className="song-title">{song.title}</div>
+                            <div className="song-artist">{song.artist}</div>
+                          </div>
+                          <div className="song-play-button">
+                            <svg viewBox="0 0 24 24" width="24" height="24">
+                              <polygon points="8,5 19,12 8,19" fill="currentColor"/>
+                            </svg>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="no-content-message">
+                      <p>Add songs to your favourites to see them here!</p>
+                      <button className="secondary-button" onClick={() => navigate('/explore')}>
+                        Explore Music
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </section>
             
             <section className="featured-section">
-              <h2>Featured Songs</h2>
+              <div className="section-header">
+                <h2>Featured Songs</h2>
+                <ScrollControls scrollContainerId="featured-scroll" />
+              </div>
               <p className="section-description">Handpicked just for you</p>
-              <div className="song-grid">
+              <div className="horizontal-scroll" id="featured-scroll">
                 {featuredSongs.map(song => (
                   <SongItem
                     key={song.id || song.player_id}
                     player_id={song.player_id || song.id}
                     title={song.title}
                     artist={song.artist}
-                    cover_url={song.cover_url || song.cover}
                     duration={song.duration}
                     onClick={handleSongClick}
                   />
@@ -181,16 +213,18 @@ const Home: React.FC = () => {
             </section>
             
             <section className="new-releases-section">
-              <h2>New Releases</h2>
+              <div className="section-header">
+                <h2>New Releases</h2>
+                <ScrollControls scrollContainerId="new-releases-scroll" />
+              </div>
               <p className="section-description">Fresh music updated weekly</p>
-              <div className="song-grid">
+              <div className="horizontal-scroll" id="new-releases-scroll">
                 {newReleases.map(song => (
                   <SongItem
                     key={song.id || song.player_id}
                     player_id={song.player_id || song.id}
                     title={song.title}
                     artist={song.artist}
-                    cover_url={song.cover_url || song.cover}
                     duration={song.duration}
                     onClick={handleSongClick}
                   />
