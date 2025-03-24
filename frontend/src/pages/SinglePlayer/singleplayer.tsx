@@ -27,6 +27,7 @@ const SinglePlayer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [myPlaylists, setMyPlaylists] = useState<Playlist[]>([]);
   const [showPlaylistMenu, setShowPlaylistMenu] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -130,6 +131,30 @@ const SinglePlayer: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchMyPlaylists = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/profile/playlists', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status === 'success') {
+            setMyPlaylists(data.data.playlists || []);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching personal playlists:', err);
+      }
+    };
+  
+    fetchMyPlaylists();
+  }, [token]);
+
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -145,14 +170,6 @@ const SinglePlayer: React.FC = () => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (audioRef.current) {
-      const newTime = parseFloat(e.target.value);
-      audioRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
-    }
   };
 
   const toggleFavorite = async () => {
@@ -208,22 +225,6 @@ const SinglePlayer: React.FC = () => {
     }
   };
 
-  const handleShareClick = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: song?.title || 'Check out this song!',
-        text: `Listen to ${song?.title} by ${song?.artist} on Musify`,
-        url: window.location.href
-      })
-      .catch((error) => console.log('Error sharing', error));
-    } else {
-      // Fallback - copy to clipboard
-      navigator.clipboard.writeText(window.location.href)
-        .then(() => alert('Link copied to clipboard!'))
-        .catch((error) => console.error('Failed to copy', error));
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="singleplayer-container">
@@ -253,7 +254,7 @@ const SinglePlayer: React.FC = () => {
 
   return (
     <div className="singleplayer-container">
-      <Sidebar activePage="explore" />
+      <Sidebar activePage="player" />
       
       <div className="singleplayer-content">
         {/* Song header - Two column layout */}
@@ -333,38 +334,50 @@ const SinglePlayer: React.FC = () => {
                 </svg>
                 <span className="button-label">Playlist</span>
               </button>
-              
+              {/* Modal overlay for playlist menu */}
               {showPlaylistMenu && (
-                <div className="playlist-menu">
-                  <div className="playlist-menu-header">
-                    <h4>Your Playlists</h4>
-                    <button 
-                      className="close-menu"
-                      onClick={() => setShowPlaylistMenu(false)}
-                    >
-                      &times;
-                    </button>
+                <div className="modal-overlay" onClick={() => setShowPlaylistMenu(false)}>
+                  <div className="playlist-modal" onClick={(e) => e.stopPropagation()}>
+                    <div className="playlist-modal-header">
+                      <h3>Add to Playlist</h3>
+                      <button 
+                        className="close-modal"
+                        onClick={() => setShowPlaylistMenu(false)}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                    
+                    <div className="playlist-modal-content">
+                      {myPlaylists.length > 0 ? (
+                        <ul className="playlists-list">
+                          {myPlaylists.map(playlist => (
+                            <li 
+                              key={playlist.playlist_id}
+                              onClick={() => addToPlaylist(playlist.playlist_id)}
+                              className="playlist-item"
+                            >
+                              <span className="playlist-name">{playlist.name}</span>
+                              <span className="add-icon">+</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className="no-playlists">
+                          <p>You don't have any playlists yet.</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="playlist-modal-footer">
+                      <button 
+                        className="create-playlist-btn"
+                        onClick={() => navigate('/playlists')}
+                      >
+                        Create New Playlist
+                      </button>
+                    </div>
                   </div>
-                  {playlists.length > 0 ? (
-                    <ul className="playlists-list">
-                      {playlists.map(playlist => (
-                        <li 
-                          key={playlist.playlist_id}
-                          onClick={() => addToPlaylist(playlist.playlist_id)}
-                        >
-                          {playlist.name}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="no-playlists">You don't have any playlists yet.</p>
-                  )}
-                  <button 
-                    className="create-playlist"
-                    onClick={() => navigate('/playlists')}
-                  >
-                    Create New Playlist
-                  </button>
                 </div>
               )}
             </div>
