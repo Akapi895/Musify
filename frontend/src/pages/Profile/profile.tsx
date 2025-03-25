@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProfile, fetchPlaylists, createPlaylist, fetchUserSongs } from "./api";
 import "./profile.css";
+import { useMusicPlayer } from '../../hooks/useMusicPlayer';
 
 import { 
   PlaylistItem, SongItem,
@@ -20,9 +21,9 @@ interface Profile {
 interface Playlist {
   id: number;
   name: string;
-  description: string;
-  cover_url?: string;
   song_count: number;
+  description?: string;
+  cover_url?: string;
 }
 
 interface Song {
@@ -42,6 +43,8 @@ const Profile = () => {
   const [showPlaylistForm, setShowPlaylistForm] = useState(false);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+
+  const { playMusic } = useMusicPlayer();
   
 
   useEffect(() => {
@@ -49,6 +52,7 @@ const Profile = () => {
       try {
         const profileData = await fetchProfile(token!);
         setProfile(profileData.data);
+        console.log(profileData.data);
       } catch (error) {
         console.error("Error fetching profile:", error);
       }
@@ -57,7 +61,18 @@ const Profile = () => {
     const loadPlaylists = async () => {
       try {
         const playlistsData = await fetchPlaylists(token!);
-        setPlaylists(playlistsData.data.playlists || []);
+        
+        // Transform the API data to match your interface
+        const transformedPlaylists = (playlistsData.data.playlists || []).map(playlist => ({
+          id: playlist.playlist_id || playlist.id,
+          name: playlist.name,
+          song_count: playlist.song_count || 0,
+          description: playlist.description,
+          cover_url: playlist.cover_url
+        }));
+        
+        setPlaylists(transformedPlaylists);
+        console.log('Transformed playlists:', transformedPlaylists);
       } catch (error) {
         console.error("Error fetching playlists:", error);
       }
@@ -112,12 +127,24 @@ const Profile = () => {
     }
   };
 
-  const handlePlaySong = (songId: number) => {
-    navigate(`/player/${songId}`);
+  const handlePlaySong = (song: Song) => {
+    if (song.file_url) {
+      const songWithDefaults: Song = {
+        ...song,
+        duration: song.duration ?? 0,
+      };
+      
+      // Play the song using the music context
+      playMusic(songWithDefaults);
+    }
+    
+    // Navigate to the player page
+    navigate(`/player/${song.player_id}`);
   };
 
   const handlePlaylistClick = (playlistId: number) => {
-    navigate(`/playlist/${String(playlistId)}`);
+    console.log("Playlist clicked:", playlistId);
+    navigate(`/playlist/${playlistId}`);
   };
 
   return (
@@ -190,7 +217,7 @@ const Profile = () => {
           playlist_id={playlist.id}
           name={playlist.name}
           song_count={playlist.song_count}
-          onClick={handlePlaylistClick}
+          onClick={() => handlePlaylistClick(playlist.id)}
           />
         ))}
       </HorizontalScrollContainer>
@@ -220,7 +247,8 @@ const Profile = () => {
               title={song.title}
               artist={song.artist}
               duration={song.duration}
-              onClick={handlePlaySong}
+              file_url={song.file_url}
+              onClick={() => handlePlaySong(song)}
             />
           ))}
         </div>

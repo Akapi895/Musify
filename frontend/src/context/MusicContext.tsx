@@ -85,22 +85,22 @@ export const MusicProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const playMusic = (song: Song) => {
     try {
-            if (!currentSong || currentSong.player_id !== song.player_id) {
-                audioRef.current.src = song.file_url;
+      if (!currentSong || currentSong.player_id !== song.player_id) {
+        audioRef.current.src = song.file_url;
         setCurrentSong(song);
       }
-      
+      setIsPlaying(true);
       audioRef.current
         .play()
         .then(() => setIsPlaying(true))
-          .catch(error => {
-            console.error("Error playing song:", error);
-            setIsPlaying(false);
-          });
-          } catch (error) {
-            console.error("Error playing song:", error);
-            setIsPlaying(false);
-          }
+        .catch(error => {
+          console.error("Error playing song:", error);
+          setIsPlaying(false);
+        });
+    } catch (error) {
+      console.error("Error playing song:", error);
+      setIsPlaying(false);
+    }
   };
   
     const pauseMusic = () => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlaylistItem } from '../../components/MusicItems';
 import './playlists.css';
@@ -6,8 +6,8 @@ import './playlists.css';
 interface Playlist {
   id: number;
   name: string;
-  description?: string;
   song_count: number;
+  description?: string;
   cover_url?: string;
 }
 
@@ -97,7 +97,7 @@ const Playlists = () => {
               playlist_id={playlist.id}
               name={playlist.name}
               song_count={playlist.song_count}
-              onClick={handlePlaylistClick}
+              onClick={() => handlePlaylistClick(playlist.id)}
             />
           ))}
         </div>

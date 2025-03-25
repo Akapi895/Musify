@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/sidebar';
 import { SongItem } from '../../components/MusicItems';
+import { useMusicPlayer } from '../../hooks/useMusicPlayer';
+
 import './singleplaylist.css';
 
 interface Song {
   player_id: number;
   title: string;
   artist: string;
-  duration?: number;
+  duration: number;
+  cover_url?: string;
+  file_url: string;
   release_date?: string;
-  file_url?: string;
-  lyrics?: string;
-  user_id?: number;
 }
 
 interface Playlist {
@@ -31,6 +32,8 @@ const SinglePlaylist: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+
+  const { playMusic } = useMusicPlayer();
 
   useEffect(() => {
     const fetchPlaylistData = async () => {
@@ -64,14 +67,8 @@ const SinglePlaylist: React.FC = () => {
           name: "My Sample Playlist",
           description: "A collection of awesome songs",
           user_id: 1,
-          creator_name: "Music Lover",
           song_count: 4,
-          songs: [
-            { player_id: 1, title: "Shape of You", artist: "Ed Sheeran", duration: 235 },
-            { player_id: 2, title: "Blinding Lights", artist: "The Weeknd", duration: 200 },
-            { player_id: 3, title: "Dance Monkey", artist: "Tones and I", duration: 210 },
-            { player_id: 4, title: "Watermelon Sugar", artist: "Harry Styles", duration: 174 }
-          ]
+          songs: []
         });
       } finally {
         setIsLoading(false);
@@ -118,8 +115,17 @@ const SinglePlaylist: React.FC = () => {
     fetchPlaylistDetail();
   }, [playlistId, token]);
 
-  const handleSongClick = (songId: number) => {
-    navigate(`/player/${songId}`);
+  const handleSongClick = (song: Song) => {
+    if (song.file_url) {
+      const songWithDefaults: Song = {
+        ...song,
+        duration: song.duration ?? 0,
+      };
+      
+      // Play the song using the music context
+      playMusic(songWithDefaults);
+    }
+    navigate(`/player/${song.player_id}`);
   };
 
   const formatDate = (dateString: string) => {
@@ -196,7 +202,7 @@ const SinglePlaylist: React.FC = () => {
               <div 
                 key={song.player_id} 
                 className="song-row"
-                onClick={() => handleSongClick(song.player_id)}
+                onClick={() => handleSongClick(song)}
               >
                 <div className="song-number">{index + 1}</div>
                 <div className="song-title-info">

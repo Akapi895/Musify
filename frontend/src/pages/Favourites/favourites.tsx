@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SongItem } from '../../components/MusicItems';
+import { useMusicPlayer } from '../../hooks/useMusicPlayer';
 import './favourites.css';
 
 interface Song {
@@ -9,7 +10,7 @@ interface Song {
   artist: string;
   duration: number;
   cover_url?: string;
-  file_url?: string;
+  file_url: string;
   release_date?: string;
 }
 
@@ -19,6 +20,8 @@ const Favourites = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+
+  const { playMusic } = useMusicPlayer();
 
   useEffect(() => {
     const fetchFavouriteSongs = async () => {
@@ -58,8 +61,19 @@ const Favourites = () => {
     fetchFavouriteSongs();
   }, [token]);
 
-  const handlePlaySong = (songId: number) => {
-    navigate(`/player/${songId}`);
+  const handlePlaySong = (song: Song) => {
+    if (song.file_url) {
+      const songWithDefaults: Song = {
+        ...song,
+        duration: song.duration ?? 0,
+      };
+      
+      // Play the song using the music context
+      playMusic(songWithDefaults);
+    }
+    
+    // Navigate to the player page
+    navigate(`/player/${song.player_id}`);
   };
 
   return (
@@ -92,7 +106,8 @@ const Favourites = () => {
               artist={song.artist}
               duration={song.duration}
               cover_url={song.cover_url}
-              onClick={handlePlaySong}
+              file_url={song.file_url}
+              onClick={() => handlePlaySong(song)}
             />
           ))}
         </div>
