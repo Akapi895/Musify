@@ -6,6 +6,7 @@ import Playlists from './pages/Playlists/playlists';
 import Favourites from './pages/Favourites/favourites';
 import MyPlayers from './pages/MyPlayers/myplayers';
 import Sidebar from './components/Sidebar/sidebar';
+import MusicBar from './components/MusicBar/musicbar';
 import SinglePlaylist from './pages/SinglePlaylist/singleplaylist';
 import SinglePlayer from './pages/SinglePlayer/singleplayer';
 import Login from './pages/Login/login';
@@ -14,16 +15,37 @@ import Upload from './pages/Upload/upload';
 import './App.css';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('isAuthenticated') === 'true';
-  });
+  // Always start with isAuthenticated set to false
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // On initial load, check if we're in development and clear auth state
+  useEffect(() => {
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    if (isDevelopment) {
+      console.log('Development mode detected - clearing authentication state');
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      setIsAuthenticated(false);
+    } else {
+      // Only in production, check local storage
+      setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
+    }
 
+    // Add a timeout to ensure the loading state is visible briefly
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+  }, []);
+
+  // Keep the rest of your auth check logic for when user is actually authenticated
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
         const token = localStorage.getItem('token');
         
-        // Only attempt to check auth if token exists
         if (token) {
           const response = await fetch('http://127.0.0.1:8000/api/user_id', {
             method: 'GET',
@@ -33,15 +55,12 @@ function App() {
             },
           });
           
-          // Don't automatically logout on response error, just log it
           if (!response.ok) {
             console.warn('Auth check failed, but not logging out automatically');
-            // Do NOT call handleLogout() here
           }
         }
       } catch (error) {
         console.error('Auth check error:', error);
-        // Do NOT logout on error
       }
     };
   
@@ -68,10 +87,16 @@ function App() {
     } finally {
       setIsAuthenticated(false);
       localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('token');
       localStorage.removeItem('userId');
     }
     console.log('isAuthenticated:', isAuthenticated);
   };
+
+  // Show loading screen while initializing
+  if (isLoading) {
+    return <div className="loading-screen">Loading...</div>;
+  }
 
   return (
     <Router>
@@ -137,6 +162,7 @@ function App() {
             />
           </Routes>
         </div>
+        <MusicBar isAuthenticated={isAuthenticated} />
       </div>
     </Router>
   );

@@ -126,7 +126,7 @@ const Profile = () => {
       {/* Always show the avatar container, use fallback for the image source */}
       <div className="profile-avatar">
         <img 
-          src={profile?.avatar_url || "https://cdn1.iconfinder.com/data/icons/avatars-55/100/avatar_profile_user_music_headphones_shirt_cool-512.png"} 
+          src={"https://cdn1.iconfinder.com/data/icons/avatars-55/100/avatar_profile_user_music_headphones_shirt_cool-512.png"} 
           alt="Profile" 
         />
       </div>
