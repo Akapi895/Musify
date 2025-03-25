@@ -1,15 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { MusicContext } from '../../context/MusicContext';
-import './musicbar.css';
-
-interface MusicBarProps {
-  isAuthenticated: boolean;
-}
-
 const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
   const [currentTime, setCurrentTime] = useState<number>(0);
   const musicContext = useContext(MusicContext);
 
+  // Dữ liệu mặc định nếu `musicContext` chưa có giá trị
   const { currentSong, isPlaying, playMusic, pauseMusic, setVolume, volume, audioRef } = 
     musicContext ?? {
       currentSong: null,
@@ -21,22 +14,18 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
       audioRef: { current: null },
     };
 
-  // const { currentSong, isPlaying, playMusic, pauseMusic, setVolume, volume, audioRef } = musicContext;
-
-  // Cập nhật audio element khi bài hát hoặc trạng thái phát thay đổi
+  // Cập nhật audio khi bài hát hoặc trạng thái phát thay đổi
   useEffect(() => {
     if (!audioRef.current || !currentSong) return;
 
-    // Nếu bài hát thay đổi, cập nhật source và reset thanh tiến trình
     if (audioRef.current.src !== currentSong.file_url) {
       audioRef.current.src = currentSong.file_url;
       setCurrentTime(0);
     }
 
-    // Phát hoặc dừng dựa trên trạng thái `isPlaying`
     if (isPlaying) {
       audioRef.current.play().catch(err => {
-        console.error('Error playing audio:', err);
+        console.error("Error playing audio:", err);
         pauseMusic();
       });
     } else {
@@ -51,7 +40,7 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
     }
   }, [volume]);
 
-  // Cập nhật thời gian hiện tại của bài hát
+  // Cập nhật thời gian hiện tại
   useEffect(() => {
     const updateTime = () => {
       if (audioRef.current) {
@@ -63,40 +52,10 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const handlePlayPause = () => {
-    if (!currentSong) return;
-    if (audioRef.current?.paused) {
-      playMusic(currentSong);
-    } else {
-      pauseMusic();
-    }
-  };
-
-  const formatTime = (time?: number): string => {
-    if (time === undefined) return "--:--";
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-  };
-
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = parseFloat(e.target.value);
-    setCurrentTime(newTime);
-    if (audioRef.current) {
-      audioRef.current.currentTime = newTime;
-    }
-  };
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume); // Đồng bộ volume với MusicContext
-  };
-
-    // Nếu context chưa có hoặc chưa đăng nhập, không hiển thị music bar
-    if (!musicContext || !isAuthenticated || !musicContext.currentSong || !currentSong) {
-      // return null;
-      return <div className="music-bar hidden"></div>;
-    }
+  // Nếu không đăng nhập hoặc không có bài hát, chỉ hiển thị UI rỗng
+  if (!isAuthenticated || !currentSong) {
+    return <div className="music-bar hidden"></div>;
+  }
 
   return (
     <div className="music-bar">
@@ -110,7 +69,7 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
         <div className="song-title">{currentSong.title}</div>
         <div className="song-artist">{currentSong.artist}</div>
       </div>
-      
+
       <div className="player-controls">
         <button className="control-btn prev-btn">
           <i className="fas fa-step-backward"></i>
@@ -124,20 +83,20 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
           <i className="fas fa-step-forward"></i>
         </button>
       </div>
-      
+
       <div className="progress-container">
         <span className="time current">{formatTime(currentTime)}</span>
         <input
           type="range"
           className="progress-bar"
           min="0"
-          max={currentSong.duration || 1} // Tránh lỗi NaN nếu duration chưa cập nhật
+          max={currentSong.duration || 1}
           value={currentTime}
-          onChange={handleTimeChange}
+          onChange={(e) => setCurrentTime(parseFloat(e.target.value))}
         />
         <span className="time total">{formatTime(currentSong.duration)}</span>
       </div>
-      
+
       <div className="volume-container">
         <i className={`fas ${volume === 0 ? 'fa-volume-mute' : volume < 0.5 ? 'fa-volume-down' : 'fa-volume-up'}`}></i>
         <input
@@ -153,5 +112,3 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
     </div>
   );
 };
-
-export default MusicBar;

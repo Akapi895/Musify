@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { MusicProvider } from "./context/MusicContext";
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Profile from './pages/Profile/profile';
 import Home from './pages/Home/home';
@@ -99,72 +100,76 @@ function App() {
   }
 
   return (
-    <Router>
-      <div className="app">
-        {/* Nếu đăng nhập, hiển thị sidebar */}
-        {isAuthenticated && <Sidebar onLogout={handleLogout} />}
-        
-        <div className={`content ${isAuthenticated ? 'content-authenticated' : ''}`}>
-          <Routes>
-            {/* Đăng nhập / Đăng ký */}
-            <Route 
-              path="/login" 
-              element={
-                isAuthenticated ? <Navigate to="/home" /> : <Login onLogin={handleLogin} />
-              }
-            />
-            <Route 
-              path="/register" 
-              element={
-                isAuthenticated ? <Navigate to="/home" /> : <Register />
-              }
-            />
+    <MusicProvider>
+      <Router>
+        <div className="app">
+          {/* Nếu đăng nhập, hiển thị sidebar */}
+          {isAuthenticated && <Sidebar onLogout={handleLogout} />}
+          
+          <div className={`content ${isAuthenticated ? 'content-authenticated' : ''}`}>
+            <Routes>
+              {/* Đăng nhập / Đăng ký */}
+              <Route 
+                path="/login" 
+                element={
+                  isAuthenticated ? <Navigate to="/home" /> : <Login onLogin={handleLogin} />
+                }
+              />
+              <Route 
+                path="/register" 
+                element={
+                  isAuthenticated ? <Navigate to="/home" /> : <Register />
+                }
+              />
 
-            {/* Các trang yêu cầu đăng nhập */}
-            <Route 
-              path="/home" 
-              element={
-                isAuthenticated ? <Home /> : <Navigate to="/login" />
-              }
-            />
-            <Route 
-              path="/profile" 
-              element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}
-            />
-            <Route 
-              path="/playlist/:playlistId" 
-              element={isAuthenticated ? <SinglePlaylist /> : <Navigate to="/login" />}
-            />
-            <Route 
-              path="/player/:playerId" 
-              element={isAuthenticated ? <SinglePlayer /> : <Navigate to="/login" />}
-            />
-            <Route 
-              path="/myplayers" 
-              element={isAuthenticated ? <MyPlayers /> : <Navigate to="/login" />}
-            />
-            <Route 
-              path="/favourites" 
-              element={isAuthenticated ? <Favourites /> : <Navigate to="/login" />}
-            />
-            <Route 
-              path="/playlists" 
-              element={isAuthenticated ? <Playlists /> : <Navigate to="/login" />}
-            />
-            <Route 
-              path="/upload" 
-              element={isAuthenticated ? <Upload /> : <Navigate to="/login" />}
-            />
-            {/* Trang gốc / */}
-            <Route 
-              path="/" 
-              element={<Navigate to={isAuthenticated ? "/home" : "/login"} />}
-            />
-          </Routes>
+              {/* Các trang yêu cầu đăng nhập */}
+              <Route 
+                path="/home" 
+                element={
+                  isAuthenticated ? <Home /> : <Navigate to="/login" />
+                }
+              />
+              <Route 
+                path="/profile" 
+                element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}
+              />
+              <Route 
+                path="/playlist/:playlistId" 
+                element={isAuthenticated ? <SinglePlaylist /> : <Navigate to="/login" />}
+              />
+              <Route 
+                path="/player/:playerId" 
+                element={isAuthenticated ? <SinglePlayer /> : <Navigate to="/login" />}
+              />
+              <Route 
+                path="/myplayers" 
+                element={isAuthenticated ? <MyPlayers /> : <Navigate to="/login" />}
+              />
+              <Route 
+                path="/favourites" 
+                element={isAuthenticated ? <Favourites /> : <Navigate to="/login" />}
+              />
+              <Route 
+                path="/playlists" 
+                element={isAuthenticated ? <Playlists /> : <Navigate to="/login" />}
+              />
+              <Route 
+                path="/upload" 
+                element={isAuthenticated ? <Upload /> : <Navigate to="/login" />}
+              />
+              {/* Trang gốc / */}
+              <Route 
+                path="/" 
+                element={<Navigate to={isAuthenticated ? "/home" : "/login"} />}
+              />
+            </Routes>
+          </div>
+          <MusicBar isAuthenticated={isAuthenticated} />
+          {/* {isAuthenticated && <Sidebar onLogout={handleLogout} />} */}
         </div>
-        <MusicBar isAuthenticated={isAuthenticated} />
-      </div>
-    </Router>
+      </Router>      
+    </MusicProvider>
+
   );
 }
 

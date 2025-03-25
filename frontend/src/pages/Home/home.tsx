@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/sidebar';
-import { SongItem, HorizontalScrollContainer } from '../../components/MusicItems';
+import { SongItem } from '../../components/MusicItems';
+import { useMusicPlayer } from '../../hooks/useMusicPlayer';
 import './home.css';
 
 interface Song {
-  id: number;
-  player_id?: number;
+  player_id: number;
   title: string;
   artist: string;
-  cover?: string;
+  cover_url?: string;
   duration?: number;
+  file_url: string;
 }
 
 // Custom scroll controls component
-const ScrollControls: React.FC<{
-  scrollContainerId: string;
-}> = ({ scrollContainerId }) => {
+const ScrollControls: React.FC<{ scrollContainerId: string }> = ({ scrollContainerId }) => {
   const scrollLeft = () => {
     const container = document.getElementById(scrollContainerId);
     if (container) {
@@ -33,12 +32,8 @@ const ScrollControls: React.FC<{
 
   return (
     <div className="scroll-controls">
-      <button className="scroll-button" onClick={scrollLeft} aria-label="Scroll left">
-        &#8592;
-      </button>
-      <button className="scroll-button" onClick={scrollRight} aria-label="Scroll right">
-        &#8594;
-      </button>
+      <button className="scroll-button" onClick={scrollLeft} aria-label="Scroll left">←</button>
+      <button className="scroll-button" onClick={scrollRight} aria-label="Scroll right">→</button>
     </div>
   );
 };
@@ -51,33 +46,21 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   
+  const { playMusic } = useMusicPlayer(); // ✅ Lấy playMusic từ context
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
         
-        // Fetch featured songs
         const featuredResponse = await fetch('http://127.0.0.1:8000/api/home/featured', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         });
-        
-        // Fetch new releases
         const newReleasesResponse = await fetch('http://127.0.0.1:8000/api/home/new-releases', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         });
-        
-        // Fetch top 5 favourites
         const favouritesResponse = await fetch('http://127.0.0.1:8000/api/home/favorites/top?limit=5', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         });
 
         const featuredData = await featuredResponse.json();
@@ -89,18 +72,6 @@ const Home: React.FC = () => {
         setTopFavourites(favouritesData.data.songs || []);
       } catch (error) {
         console.error('Error fetching data:', error);
-        // Use sample data as fallback
-        setFeaturedSongs([
-          { id: 1, player_id: 1, title: 'Shape of You', artist: 'Ed Sheeran'},
-          { id: 2, player_id: 2, title: 'Blinding Lights', artist: 'The Weeknd'},
-        ]);
-        setNewReleases([
-          { id: 5, player_id: 5, title: 'As It Was', artist: 'Harry Styles'},
-          { id: 6, player_id: 6, title: 'STAY', artist: 'The Kid LAROI, Justin Bieber'},
-        ]);
-        setTopFavourites([
-          { id: 9, player_id: 9, title: 'Bohemian Rhapsody', artist: 'Queen'},
-        ]);
       } finally {
         setIsLoading(false);
       }
@@ -109,10 +80,17 @@ const Home: React.FC = () => {
     fetchData();
   }, [token]);
   
-  const handleSongClick = (songId: number) => {
-    navigate(`/player/${songId}`);
-  };
+  const handleSongClick = (song: Song) => {
+    const songWithDefaults: Song = {
+      ...song,
+      duration: song.duration ?? 0,
+    };
+    console.log("Playing songggg:", song); // ✅ Kiểm tra song có đúng không
+    console.log("file_url:", song.file_url);
   
+    playMusic(songWithDefaults);
+  };
+
   return (
     <div className="home-container">
       <Sidebar activePage="home" />
@@ -160,9 +138,9 @@ const Home: React.FC = () => {
                     <div className="vertical-song-list">
                       {topFavourites.map((song, index) => (
                         <div 
-                          key={song.id || song.player_id} 
+                          key={song.player_id} 
                           className="vertical-song-item"
-                          onClick={() => handleSongClick(song.player_id || song.id)}
+                          onClick={() => handleSongClick(song)}
                         >
                           <div className="song-number">{index + 1}</div>
                           <div className="song-image">
@@ -201,11 +179,13 @@ const Home: React.FC = () => {
               <div className="horizontal-scroll" id="featured-scroll">
                 {featuredSongs.map(song => (
                   <SongItem
-                    key={song.id || song.player_id}
-                    player_id={song.player_id || song.id}
+                    key={song.player_id}
+                    player_id={song.player_id}
                     title={song.title}
                     artist={song.artist}
                     duration={song.duration}
+                    cover_url={song.cover_url}
+                    file_url={song.file_url}
                     onClick={handleSongClick}
                   />
                 ))}
@@ -221,11 +201,13 @@ const Home: React.FC = () => {
               <div className="horizontal-scroll" id="new-releases-scroll">
                 {newReleases.map(song => (
                   <SongItem
-                    key={song.id || song.player_id}
-                    player_id={song.player_id || song.id}
+                    key={song.player_id}
+                    player_id={song.player_id}
                     title={song.title}
                     artist={song.artist}
                     duration={song.duration}
+                    cover_url={song.cover_url}
+                    file_url={song.file_url}
                     onClick={handleSongClick}
                   />
                 ))}

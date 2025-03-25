@@ -317,7 +317,7 @@ async def commit_uploaded_file(request: CommitFileRequest):
         
         # Create paths to frontend assets
         temp_dir = project_root / "frontend" / "src" / "assets" / "temp"
-        songs_dir = project_root / "frontend" / "src" / "assets" / "songs"
+        songs_dir = project_root / "frontend" / "public" / "assets" / "songs"
         
         # Ensure songs directory exists
         songs_dir.mkdir(parents=True, exist_ok=True)

@@ -1,5 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useMusicPlayer } from '../hooks/useMusicPlayer';
+
 import "./MusicItems.css";
 
 // Types for our props
@@ -16,8 +18,8 @@ interface SongProps {
   artist: string;
   cover_url?: string;
   duration?: number;
-  onClick?: (id: number) => void;
-  index?: number;
+  file_url: string;
+  onClick?: (song: SongProps) => void;
 }
 
 // Playlist component
@@ -58,21 +60,27 @@ export const PlaylistItem: React.FC<PlaylistProps> = ({
 
 // Song component
 export const SongItem: React.FC<SongProps> = ({ 
-    player_id, 
-    title, 
-    artist, 
-    duration,
-    onClick
+  player_id, 
+  title, 
+  artist,
+  cover_url, 
+  duration,
+  file_url,
+  onClick
   }) => {
     const navigate = useNavigate();
-    
-    const handleClick = () => {
-      if (onClick) {
-        onClick(player_id);
-      } else {
-        navigate(`/player/${player_id}`);
-      }
-    };
+  const { currentSong, isPlaying } = useMusicPlayer();
+  
+  const handleClick = () => {
+    if (onClick) {
+      // Pass the complete song object to the onClick handler
+      const song = { player_id, title, artist, cover_url, duration, file_url };
+      onClick(song);
+    } else {
+      // Default behavior: navigate to song page
+      navigate(`/player/${player_id}`);
+    }
+  };
     
     const formatDuration = (seconds?: number) => {
       if (!seconds) return "--:--";
@@ -80,18 +88,29 @@ export const SongItem: React.FC<SongProps> = ({
       const sec = Math.floor(seconds % 60);
       return `${min}:${sec < 10 ? '0' + sec : sec}`;
     };
-    
+
+    const isActive = !!currentSong && currentSong.player_id === player_id;
+
     return (
-      <div className="song-card vertical" onClick={handleClick}>
+      <div className={`song-card vertical ${isActive ? 'active-song' : ''}`} onClick={handleClick}>
         <div className="item-cover">
           <img 
-            src={"https://www.shutterstock.com/image-photo/abstract-design-musical-note-symbol-600nw-1169623948.jpg"} 
+            src={cover_url || "https://www.shutterstock.com/image-photo/abstract-design-musical-note-symbol-600nw-1169623948.jpg"} 
             alt={title} 
           />
           <div className="play-overlay">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-              <polygon points="5,3 19,12 5,21" fill="#fff"/>
-            </svg>
+            {isActive && isPlaying ? (
+              // Pause icon when playing
+              <svg viewBox="0 0 24 24" width="24" height="24">
+                <rect x="6" y="5" width="4" height="14" fill="#fff"/>
+                <rect x="14" y="5" width="4" height="14" fill="#fff"/>
+              </svg>
+            ) : (
+              // Play icon when not playing
+              <svg viewBox="0 0 24 24" width="24" height="24">
+                <polygon points="5,3 19,12 5,21" fill="#fff"/>
+              </svg>
+            )}
           </div>
         </div>
         <h3 className="item-title">{title}</h3>
