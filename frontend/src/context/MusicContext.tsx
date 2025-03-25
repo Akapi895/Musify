@@ -6,7 +6,7 @@ interface Song {
   artist: string;
   file_url: string;
   duration?: number;
-}
+  }
 
 interface MusicContextType {
   currentSong: Song | null;
@@ -79,37 +79,38 @@ export const MusicProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, []);
 
-  useEffect(() => {
+    useEffect(() => {
     audioRef.current.volume = volume;
   }, [volume]);
 
   const playMusic = (song: Song) => {
     try {
-      if (!currentSong || currentSong.player_id !== song.player_id) {
-        audioRef.current.src = song.file_url;
-        console.log("Playing song from thiss:", song);
+            if (!currentSong || currentSong.player_id !== song.player_id) {
+                audioRef.current.src = song.file_url;
         setCurrentSong(song);
       }
       
       audioRef.current
         .play()
         .then(() => setIsPlaying(true))
-        .catch(error => {
-          console.error("Error playing song:", error);
-          setIsPlaying(false);
-        });
-    } catch (error) {
-      console.error("Failed to play song:", error);
-    }
+          .catch(error => {
+            console.error("Error playing song:", error);
+            setIsPlaying(false);
+          });
+          } catch (error) {
+            console.error("Error playing song:", error);
+            setIsPlaying(false);
+          }
   };
   
-  const pauseMusic = () => {
+    const pauseMusic = () => {
+    console.log("Pausing music");
     audioRef.current.pause();
-    setIsPlaying(false);
+    setIsPlaying(false); // This was incorrectly set to true
   };
   
   const togglePlay = () => {
-    if (!currentSong) {
+        if (!currentSong) {
       const savedSong = localStorage.getItem("current-song");
       if (savedSong) {
         try {
@@ -122,17 +123,32 @@ export const MusicProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       return;
     }
     
-    isPlaying ? pauseMusic() : playMusic(currentSong);
+    if (isPlaying) {
+      pauseMusic();
+    } else {
+      playMusic(currentSong);
+    }
   };
   
-  const setVolume = (newVolume: number) => {
-    const clampedVolume = Math.min(1, Math.max(0, newVolume)); // Giới hạn từ 0 - 1
+    const setVolume = (newVolume: number) => {
+    console.log("Setting volume to:", newVolume);
+    const clampedVolume = Math.min(1, Math.max(0, newVolume)); // Limit to 0-1
     audioRef.current.volume = clampedVolume;
+    
+    // REMOVE this part that was causing issue #2
+    // if (clampedVolume > 0) {
+    //   setIsPlaying(true);
+    // }
+    // else {
+    //   setIsPlaying(false);
+    // }
+    
     setVolumeState(clampedVolume);
   };
   
   const seekTo = (time: number) => {
     if (audioRef.current) {
+      console.log("Seeking to:", time);
       audioRef.current.currentTime = time;
       setCurrentTime(time);
     }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { MusicContext } from '../../context/MusicContext';
 import './musicbar.css';
+import { BiPlay, BiPause } from "react-icons/bi";
 
 interface MusicBarProps {
   isAuthenticated: boolean;
@@ -20,8 +21,6 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
       volume: 0.5,
       audioRef: { current: null },
     };
-
-  // const { currentSong, isPlaying, playMusic, pauseMusic, setVolume, volume, audioRef } = musicContext;
 
   // Cập nhật audio element khi bài hát hoặc trạng thái phát thay đổi
   useEffect(() => {
@@ -63,14 +62,14 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const handlePlayPause = () => {
-    if (!currentSong) return;
-    if (audioRef.current?.paused) {
-      playMusic(currentSong);
-    } else {
-      pauseMusic();
-    }
-  };
+  // const handlePlayPause = () => {
+  //   if (!currentSong) return;
+  //   if (audioRef.current?.paused) {
+  //     playMusic(currentSong);
+  //   } else {
+  //     pauseMusic();
+  //   }
+  // };
 
   const formatTime = (time?: number): string => {
     if (time === undefined) return "--:--";
@@ -87,15 +86,15 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
     }
   };
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume); // Đồng bộ volume với MusicContext
-  };
+    // const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //   const newVolume = parseFloat(e.target.value);
+    //   setVolume(newVolume); // Đồng bộ volume với MusicContext
+    // };
 
     // Nếu context chưa có hoặc chưa đăng nhập, không hiển thị music bar
-    if (!musicContext || !isAuthenticated || !musicContext.currentSong || !currentSong) {
-      // return null;
-      return <div className="music-bar hidden"></div>;
+    if (!musicContext || !isAuthenticated || !currentSong) {
+      return null;
+      // return <div className="music-bar hidden"></div>;
     }
 
   return (
@@ -111,17 +110,9 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
         <div className="song-artist">{currentSong.artist}</div>
       </div>
       
-      <div className="player-controls">
-        <button className="control-btn prev-btn">
-          <i className="fas fa-step-backward"></i>
-        </button>
-        
-        <button className="control-btn play-pause-btn" onClick={() => isPlaying ? pauseMusic() : playMusic(currentSong)}>
-          {isPlaying ? <i className="fas fa-pause"></i> : <i className="fas fa-play"></i>}
-        </button>
-        
-        <button className="control-btn next-btn">
-          <i className="fas fa-step-forward"></i>
+      <div className="player-controls">        
+        <button className=".control-btn-music-bar play-pause-btn-music-bar" onClick={() => isPlaying ? pauseMusic() : playMusic(currentSong)}>
+          {isPlaying ? <BiPause size={24} color="#fff" /> : <BiPlay size={24} color="#fff" />}
         </button>
       </div>
       
@@ -131,7 +122,7 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
           type="range"
           className="progress-bar"
           min="0"
-          max={currentSong.duration || 1} // Tránh lỗi NaN nếu duration chưa cập nhật
+          max={currentSong.duration || 1} 
           value={currentTime}
           onChange={handleTimeChange}
         />

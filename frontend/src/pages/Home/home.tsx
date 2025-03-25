@@ -46,7 +46,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   
-  const { playMusic } = useMusicPlayer(); // ✅ Lấy playMusic từ context
+  const { playMusic } = useMusicPlayer();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,11 +84,10 @@ const Home: React.FC = () => {
     const songWithDefaults: Song = {
       ...song,
       duration: song.duration ?? 0,
-    };
-    console.log("Playing songggg:", song); // ✅ Kiểm tra song có đúng không
-    console.log("file_url:", song.file_url);
-  
+    };  
+
     playMusic(songWithDefaults);
+    navigate('/player/' + song.player_id);
   };
 
   return (

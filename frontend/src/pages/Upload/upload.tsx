@@ -70,25 +70,25 @@ const Upload: React.FC = () => {
     if (error) setError(null);
   };
 
-  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Convert time format (mm:ss) to seconds
-    if (value.includes(':')) {
-      const [minutes, seconds] = value.split(':').map(part => parseInt(part, 10));
-      if (!isNaN(minutes) && !isNaN(seconds)) {
-        setFormData({
-          ...formData,
-          duration: minutes * 60 + seconds
-        });
-      }
-    } else {
-      // If user inputs a number directly, treat it as seconds
-      const seconds = parseInt(value, 10);
-      if (!isNaN(seconds)) {
-        setFormData({ ...formData, duration: seconds });
-      }
-    }
-  };
+  // const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const value = e.target.value;
+  //   // Convert time format (mm:ss) to seconds
+  //   if (value.includes(':')) {
+  //     const [minutes, seconds] = value.split(':').map(part => parseInt(part, 10));
+  //     if (!isNaN(minutes) && !isNaN(seconds)) {
+  //       setFormData({
+  //         ...formData,
+  //         duration: minutes * 60 + seconds
+  //       });
+  //     }
+  //   } else {
+  //     // If user inputs a number directly, treat it as seconds
+  //     const seconds = parseInt(value, 10);
+  //     if (!isNaN(seconds)) {
+  //       setFormData({ ...formData, duration: seconds });
+  //     }
+  //   }
+  // };
 
   // Step 1: Upload file to temp location
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
