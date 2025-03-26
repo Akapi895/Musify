@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar/sidebar';
 import './upload.css';
 
 interface UploadFormData {
@@ -66,31 +65,9 @@ const Upload: React.FC = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     
-    // Clear error when user starts typing
     if (error) setError(null);
   };
 
-  // const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = e.target.value;
-  //   // Convert time format (mm:ss) to seconds
-  //   if (value.includes(':')) {
-  //     const [minutes, seconds] = value.split(':').map(part => parseInt(part, 10));
-  //     if (!isNaN(minutes) && !isNaN(seconds)) {
-  //       setFormData({
-  //         ...formData,
-  //         duration: minutes * 60 + seconds
-  //       });
-  //     }
-  //   } else {
-  //     // If user inputs a number directly, treat it as seconds
-  //     const seconds = parseInt(value, 10);
-  //     if (!isNaN(seconds)) {
-  //       setFormData({ ...formData, duration: seconds });
-  //     }
-  //   }
-  // };
-
-  // Step 1: Upload file to temp location
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -312,9 +289,7 @@ const Upload: React.FC = () => {
   };
 
   return (
-    <div className="upload-page">
-      <Sidebar activePage="myplayers" />
-      
+    <div className="upload-page">      
       <div className="upload-container">
         <div className="upload-header">
           <h1>Upload Song</h1>

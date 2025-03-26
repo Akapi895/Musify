@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar/sidebar';
-import { SongItem } from '../../components/MusicItems';
 import { useMusicPlayer } from '../../hooks/useMusicPlayer';
 
 import './singleplaylist.css';
@@ -128,19 +126,9 @@ const SinglePlaylist: React.FC = () => {
     navigate(`/player/${song.player_id}`);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }).format(date);
-  };
-
   if (isLoading) {
     return (
       <div className="singleplaylist-container">
-        <Sidebar activePage="playlists" />
         <div className="loading-container">
           <div className="loading-spinner"></div>
           <p>Loading playlist...</p>
@@ -152,7 +140,6 @@ const SinglePlaylist: React.FC = () => {
   if (error || !playlist) {
     return (
       <div className="singleplaylist-container">
-        <Sidebar activePage="playlists" />
         <div className="error-container">
           <h2>Error</h2>
           <p>{error || 'Failed to load playlist'}</p>
@@ -165,9 +152,7 @@ const SinglePlaylist: React.FC = () => {
   }
 
   return (
-    <div className="singleplaylist-container">
-      <Sidebar activePage="playlists" />
-      
+    <div className="singleplaylist-container">      
       <div className="singleplaylist-content">
         <div className="playlist-header">
           <div className="playlist-cover">

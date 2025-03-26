@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar/sidebar';
 import { SongItem } from '../../components/MusicItems';
 import { useMusicPlayer } from '../../hooks/useMusicPlayer';
 import './home.css';
@@ -91,9 +90,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="home-container">
-      <Sidebar activePage="home" />
-      
+    <div className="home-container">      
       <div className="home-content">
         <header className="home-header">
           <h1>Welcome to Musify</h1>

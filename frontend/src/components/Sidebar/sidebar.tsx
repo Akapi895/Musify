@@ -24,6 +24,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, onLogout }) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    console.log('Logout clicked');
+    navigate('/login');
     try {
       // Get the token from localStorage
       const token = localStorage.getItem('token');
@@ -60,9 +62,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, onLogout }) => {
       if (onLogout) {
         onLogout();
       }
-      
-      navigate('/login');
     }
+    navigate('/login');
   };
 
   return (

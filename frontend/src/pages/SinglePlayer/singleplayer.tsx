@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar/sidebar';
 import './singleplayer.css';
 
 interface Song {
@@ -228,7 +227,6 @@ const SinglePlayer: React.FC = () => {
   if (isLoading) {
     return (
       <div className="singleplayer-container">
-        <Sidebar activePage="explore" />
         <div className="loading-container">
           <div className="loading-spinner"></div>
           <p>Loading song...</p>
@@ -240,7 +238,6 @@ const SinglePlayer: React.FC = () => {
   if (error || !song) {
     return (
       <div className="singleplayer-container">
-        <Sidebar activePage="explore" />
         <div className="error-container">
           <h2>Error</h2>
           <p>{error || 'Failed to load song'}</p>
@@ -253,9 +250,7 @@ const SinglePlayer: React.FC = () => {
   }
 
   return (
-    <div className="singleplayer-container">
-      <Sidebar activePage="player" />
-      
+    <div className="singleplayer-container">      
       <div className="singleplayer-content">
         {/* Song header - Two column layout */}
         <div className="song-header">

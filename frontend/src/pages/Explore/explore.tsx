@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SongItem } from '../../components/MusicItems';
 import { useMusicPlayer } from '../../hooks/useMusicPlayer';
-import Sidebar from '../../components/Sidebar/sidebar';
 import './explore.css';
 
 interface Song {
@@ -130,9 +129,7 @@ const Explore: React.FC = () => {
   };
 
   return (
-    <div className="explore-container">
-      <Sidebar activePage="explore" />
-      
+    <div className="explore-container">      
       <div className="explore-content">
         <div className="explore-header">
           <h1>Explore Music</h1>
