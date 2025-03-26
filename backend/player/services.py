@@ -321,3 +321,11 @@ async def get_playlist_details(playlist_id: int) -> dict:
         print(playlist_dict)
         
         return playlist_dict
+    
+async def get_songs_by_all() -> list:
+    async with aiosqlite.connect(DATABASE) as db:
+        db.row_factory = aiosqlite.Row
+        cursor = await db.execute("SELECT * FROM songs WHERE user_id > 0 ORDER BY release_date DESC")
+        songs = await cursor.fetchall()
+        
+        return [dict(song) for song in songs]

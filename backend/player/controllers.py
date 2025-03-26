@@ -8,7 +8,7 @@ import shutil
 from pathlib import Path
 from ..auth.controllers import get_session_user_id
 from .services import (
-    get_song_by_id, add_song, update_song, 
+    get_song_by_id, add_song, update_song, get_songs_by_all,
     delete_song, get_songs_by_user, get_playlist_details,
     add_favorite, remove_favorite, get_favorites, is_favorite,
     create_user_playlist, add_song_to_playlist, remove_song_from_playlist,
@@ -437,3 +437,8 @@ async def delete_temp_file(request: DeleteTempFileRequest):
         error_msg = f"Failed to delete temporary file: {str(e)}"
         print(f"ERROR: {error_msg}")
         raise HTTPException(status_code=500, detail=error_msg)
+    
+@router.get("/all/songs", response_model=SongListResponse)
+async def get_all_songs():
+    songs = await get_songs_by_all()
+    return {"status": "success", "data": songs}

@@ -437,9 +437,9 @@ const Upload: React.FC = () => {
                   rows={10}
                   className="input-field lyrics-field"
                 ></textarea>
-                <p className="lyrics-tip">
+                {/* <p className="lyrics-tip">
                   Tip: Enter each line of the lyrics on a new line
-                </p>
+                </p> */}
               </div>
             </div>
           </div>

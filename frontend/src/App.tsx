@@ -10,6 +10,7 @@ import Sidebar from './components/Sidebar/sidebar';
 import MusicBar from './components/MusicBar/musicbar';
 import SinglePlaylist from './pages/SinglePlaylist/singleplaylist';
 import SinglePlayer from './pages/SinglePlayer/singleplayer';
+import Explore from './pages/Explore/explore';
 import Login from './pages/Login/login';
 import Register from './pages/Register/register';
 import Upload from './pages/Upload/upload';
@@ -144,6 +145,10 @@ function App() {
               <Route 
                 path="/myplayers" 
                 element={isAuthenticated ? <MyPlayers /> : <Navigate to="/login" />}
+              />
+              <Route 
+                path="/explore" 
+                element={isAuthenticated ? <Explore /> : <Navigate to="/login" />}
               />
               <Route 
                 path="/favourites" 
