@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './singleplayer.css';
+import { useMusicPlayer } from '../../hooks/useMusicPlayer';
 
 interface Song {
   player_id: number;
@@ -12,6 +13,16 @@ interface Song {
   lyrics?: string;
   user_id?: number;
 }
+
+interface PlaySong {
+  player_id: number;
+  title: string;
+  artist: string;
+  cover_url?: string;
+  duration?: number;
+  file_url: string;
+}
+
 
 interface Playlist {
   playlist_id: number;
@@ -34,6 +45,8 @@ const SinglePlayer: React.FC = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
+  const { playMusic } = useMusicPlayer();
+  
   useEffect(() => {
     const fetchSongData = async () => {
       if (!playerId) return;
@@ -154,16 +167,24 @@ const SinglePlayer: React.FC = () => {
     fetchMyPlaylists();
   }, [token]);
 
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+  const handleSongClick = (song: Song) => {
+    if (!song.file_url) {
+      console.error("Missing file URL for song:", song);
+      return;
     }
+  
+    const songWithDefaults: PlaySong = {
+      player_id: song.player_id, 
+      title: song.title,
+      artist: song.artist,
+      duration: song.duration ?? 0, 
+      file_url: song.file_url, 
+    };
+  
+    playMusic(songWithDefaults);
+    navigate(`/player/${songWithDefaults.player_id}`);
   };
+  
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -286,7 +307,7 @@ const SinglePlayer: React.FC = () => {
             <div className="song-action-buttons">
               <button 
                 className={`circular-button play-button ${isPlaying ? 'playing' : ''}`}
-                onClick={togglePlay}
+                onClick={() => handleSongClick(song)}
                 aria-label={isPlaying ? "Pause" : "Play"}
               >
                 {isPlaying ? (

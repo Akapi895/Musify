@@ -35,13 +35,14 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
     // Phát hoặc dừng dựa trên trạng thái `isPlaying`
     if (isPlaying) {
       audioRef.current.play().catch(err => {
-        console.error('Error playing audio:', err);
+        console.error("Error playing audio:", err);
         pauseMusic();
+        // togglePlay();
       });
     } else {
       audioRef.current.pause();
     }
-  }, [currentSong, isPlaying, pauseMusic]);
+  }, [currentSong, isPlaying]);
 
   // Cập nhật volume khi thay đổi
   useEffect(() => {

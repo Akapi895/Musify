@@ -83,66 +83,130 @@ export const MusicProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     audioRef.current.volume = volume;
   }, [volume]);
 
-  const playMusic = (song: Song) => {
+// const playMusic = (song: Song) => {
+//   try {
+//     console.log("Play music called with song:", song.title, "ID:", song.player_id);
+//     console.log("Current song:", currentSong?.title, "ID:", currentSong?.player_id);
+    
+//     // Check if this is actually a new song (different ID) or the same song
+//     if (!currentSong || currentSong.player_id !== song.player_id) {
+//       console.log("Loading new song:", song.title);
+//             audioRef.current.src = song.file_url;
+//       setCurrentSong(song);
+//       audioRef.current.currentTime = 0;
+//     } else {
+//       // Same song, so just log the current position
+//       console.log("Resuming existing song from position:", audioRef.current.currentTime);
+//       // Don't reset currentTime here
+//     }
+    
+//     // Play the song
+//     const playPromise = audioRef.current.play();
+    
+//     if (playPromise !== undefined) {
+//       playPromise
+//         .then(() => {
+//           console.log("Playback started successfully at:", audioRef.current.currentTime);
+//           setIsPlaying(true);
+//         })
+//         .catch(error => {
+//           console.error("Error playing song:", error);
+//           setIsPlaying(false);
+//         });
+//     }
+//   } catch (error) {
+//     console.error("Error in playMusic function:", error);
+//     setIsPlaying(false);
+//   }
+// };
+  
+const playMusic = (song: Song) => {
     try {
-      if (!currentSong || currentSong.player_id !== song.player_id) {
-        audioRef.current.src = song.file_url;
-        setCurrentSong(song);
+      if (!song.file_url) {
+        console.error("Missing file URL for song:", song);
+        return;
       }
-      setIsPlaying(true);
-      audioRef.current
-        .play()
+
+      if (!currentSong || currentSong.player_id !== song.player_id) {
+        console.log("Loading new song:", song.title);
+        audioRef.current.src = song.file_url; // Chỉ đổi src nếu là bài hát mới
+        setCurrentSong(song);
+        audioRef.current.currentTime = 0;
+      } else {
+        console.log("Resuming existing song from:", audioRef.current.currentTime);
+      }
+
+      // Phát nhạc từ vị trí hiện tại
+      audioRef.current.play()
         .then(() => setIsPlaying(true))
-        .catch(error => {
-          console.error("Error playing song:", error);
-          setIsPlaying(false);
-        });
+        .catch(error => console.error("Error playing song:", error));
     } catch (error) {
-      console.error("Error playing song:", error);
+      console.error("Error in playMusic function:", error);
       setIsPlaying(false);
     }
   };
-  
+
+
     const pauseMusic = () => {
     console.log("Pausing music");
     audioRef.current.pause();
     setIsPlaying(false); // This was incorrectly set to true
   };
   
+// const togglePlay = () => {
+//   console.log("Toggle play called, isPlaying:", isPlaying);
+  
+//   if (!currentSong) {
+//     console.log("No current song, trying to load from localStorage");
+//     const savedSong = localStorage.getItem("current-song");
+//     if (savedSong) {
+//       try {
+//         const parsedSong: Song = JSON.parse(savedSong);
+//         playMusic(parsedSong);
+//       } catch (e) {
+//         console.error("Error parsing saved song:", e);
+//       }
+//     }
+//     return;
+//   }
+  
+//   if (isPlaying) {
+//     console.log("Currently playing, so pausing");
+//     pauseMusic();
+//   } else {
+//     console.log("Currently paused, so resuming from:", audioRef.current.currentTime);
+//     // The key fix: use the existing audio element's state instead of restarting
+//     audioRef.current.play()
+//       .then(() => {
+//         console.log("Resume successful");
+//         setIsPlaying(true);
+//       })
+//       .catch(err => {
+//         console.error("Error resuming playback:", err);
+//         setIsPlaying(false);
+//       });
+//   }
+// };
+
   const togglePlay = () => {
-        if (!currentSong) {
-      const savedSong = localStorage.getItem("current-song");
-      if (savedSong) {
-        try {
-          const parsedSong: Song = JSON.parse(savedSong);
-          playMusic(parsedSong);
-        } catch (e) {
-          console.error("Error parsing saved song:", e);
-        }
-      }
-      return;
-    }
-    
+    if (!currentSong) return;
+
     if (isPlaying) {
       pauseMusic();
     } else {
-      playMusic(currentSong);
+      console.log("Resuming from:", audioRef.current.currentTime);
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(err => console.error("Error resuming playback:", err));
     }
   };
-  
+
+
     const setVolume = (newVolume: number) => {
     console.log("Setting volume to:", newVolume);
     const clampedVolume = Math.min(1, Math.max(0, newVolume)); // Limit to 0-1
     audioRef.current.volume = clampedVolume;
-    
-    // REMOVE this part that was causing issue #2
-    // if (clampedVolume > 0) {
-    //   setIsPlaying(true);
-    // }
-    // else {
-    //   setIsPlaying(false);
-    // }
-    
+        
     setVolumeState(clampedVolume);
   };
   
