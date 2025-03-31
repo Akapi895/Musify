@@ -82,43 +82,6 @@ export const MusicProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     useEffect(() => {
     audioRef.current.volume = volume;
   }, [volume]);
-
-// const playMusic = (song: Song) => {
-//   try {
-//     console.log("Play music called with song:", song.title, "ID:", song.player_id);
-//     console.log("Current song:", currentSong?.title, "ID:", currentSong?.player_id);
-    
-//     // Check if this is actually a new song (different ID) or the same song
-//     if (!currentSong || currentSong.player_id !== song.player_id) {
-//       console.log("Loading new song:", song.title);
-//             audioRef.current.src = song.file_url;
-//       setCurrentSong(song);
-//       audioRef.current.currentTime = 0;
-//     } else {
-//       // Same song, so just log the current position
-//       console.log("Resuming existing song from position:", audioRef.current.currentTime);
-//       // Don't reset currentTime here
-//     }
-    
-//     // Play the song
-//     const playPromise = audioRef.current.play();
-    
-//     if (playPromise !== undefined) {
-//       playPromise
-//         .then(() => {
-//           console.log("Playback started successfully at:", audioRef.current.currentTime);
-//           setIsPlaying(true);
-//         })
-//         .catch(error => {
-//           console.error("Error playing song:", error);
-//           setIsPlaying(false);
-//         });
-//     }
-//   } catch (error) {
-//     console.error("Error in playMusic function:", error);
-//     setIsPlaying(false);
-//   }
-// };
   
 const playMusic = (song: Song) => {
     try {
@@ -141,66 +104,48 @@ const playMusic = (song: Song) => {
         .then(() => setIsPlaying(true))
         .catch(error => console.error("Error playing song:", error));
     } catch (error) {
-      console.error("Error in playMusic function:", error);
       setIsPlaying(false);
     }
   };
 
 
-    const pauseMusic = () => {
-    console.log("Pausing music");
+  const pauseMusic = () => {
+    // console.log("Pausing music");
     audioRef.current.pause();
-    setIsPlaying(false); // This was incorrectly set to true
   };
-  
-// const togglePlay = () => {
-//   console.log("Toggle play called, isPlaying:", isPlaying);
-  
-//   if (!currentSong) {
-//     console.log("No current song, trying to load from localStorage");
-//     const savedSong = localStorage.getItem("current-song");
-//     if (savedSong) {
-//       try {
-//         const parsedSong: Song = JSON.parse(savedSong);
-//         playMusic(parsedSong);
-//       } catch (e) {
-//         console.error("Error parsing saved song:", e);
-//       }
-//     }
-//     return;
-//   }
-  
-//   if (isPlaying) {
-//     console.log("Currently playing, so pausing");
-//     pauseMusic();
-//   } else {
-//     console.log("Currently paused, so resuming from:", audioRef.current.currentTime);
-//     // The key fix: use the existing audio element's state instead of restarting
-//     audioRef.current.play()
-//       .then(() => {
-//         console.log("Resume successful");
-//         setIsPlaying(true);
-//       })
-//       .catch(err => {
-//         console.error("Error resuming playback:", err);
-//         setIsPlaying(false);
-//       });
-//   }
-// };
 
-  const togglePlay = () => {
+  const togglePlay = async () => {
     if (!currentSong) return;
+  
+    const audio = audioRef.current;
+  
+    if (!audio) return;
+  
+    if (audio.paused) {
+      const absoluteFileUrl = new URL(currentSong.file_url, window.location.origin).href;
 
-    if (isPlaying) {
-      pauseMusic();
+      if (audio.src !== absoluteFileUrl) {
+        audio.src = currentSong.file_url;
+        await audio.load();
+      }
+  
+      try {
+        await audio.play();
+        setIsPlaying(true);
+      } catch (err) {
+        setIsPlaying(false);
+      }
     } else {
-      console.log("Resuming from:", audioRef.current.currentTime);
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch(err => console.error("Error resuming playback:", err));
+      // Nếu đang phát, dừng lại trước khi tiếp tục
+      try {
+        await audio.pause();
+        setIsPlaying(false);
+      } catch (err) {
+        console.error("🚨 Error pausing playback:", err);
+      }
     }
   };
-
+  
 
     const setVolume = (newVolume: number) => {
     console.log("Setting volume to:", newVolume);

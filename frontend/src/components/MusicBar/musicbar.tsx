@@ -11,7 +11,7 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
   const [currentTime, setCurrentTime] = useState<number>(0);
   const musicContext = useContext(MusicContext);
 
-  const { currentSong, isPlaying, playMusic, pauseMusic, setVolume, volume, audioRef } = 
+  const { currentSong, isPlaying, togglePlay, pauseMusic, setVolume, volume, audioRef } = 
     musicContext ?? {
       currentSong: null,
       isPlaying: false,
@@ -26,10 +26,16 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
   useEffect(() => {
     if (!audioRef.current || !currentSong) return;
 
+    const absoluteFileUrl = new URL(currentSong.file_url, window.location.origin).href;
+
+    console.log("audioRef.current.src: ", audioRef.current.src);
+    console.log("currentSong.file_url: ", absoluteFileUrl);
+
     // Nếu bài hát thay đổi, cập nhật source và reset thanh tiến trình
-    if (audioRef.current.src !== currentSong.file_url) {
+    if (audioRef.current.src !== absoluteFileUrl) {
       audioRef.current.src = currentSong.file_url;
       setCurrentTime(0);
+      audioRef.current.play();
     }
 
     // Phát hoặc dừng dựa trên trạng thái `isPlaying`
@@ -37,7 +43,6 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
       audioRef.current.play().catch(err => {
         console.error("Error playing audio:", err);
         pauseMusic();
-        // togglePlay();
       });
     } else {
       audioRef.current.pause();
@@ -63,15 +68,6 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // const handlePlayPause = () => {
-  //   if (!currentSong) return;
-  //   if (audioRef.current?.paused) {
-  //     playMusic(currentSong);
-  //   } else {
-  //     pauseMusic();
-  //   }
-  // };
-
   const formatTime = (time?: number): string => {
     if (time === undefined) return "--:--";
     const minutes = Math.floor(time / 60);
@@ -87,15 +83,9 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
     }
   };
 
-    // const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //   const newVolume = parseFloat(e.target.value);
-    //   setVolume(newVolume); // Đồng bộ volume với MusicContext
-    // };
-
     // Nếu context chưa có hoặc chưa đăng nhập, không hiển thị music bar
     if (!musicContext || !isAuthenticated || !currentSong) {
       return null;
-      // return <div className="music-bar hidden"></div>;
     }
 
   return (
@@ -112,8 +102,10 @@ const MusicBar: React.FC<MusicBarProps> = ({ isAuthenticated }) => {
       </div>
       
       <div className="player-controls">        
-        <button className=".control-btn-music-bar play-pause-btn-music-bar" onClick={() => isPlaying ? pauseMusic() : playMusic(currentSong)}>
-          {isPlaying ? <BiPause size={24} color="#fff" /> : <BiPlay size={24} color="#fff" />}
+        <button className=".control-btn-music-bar play-pause-btn-music-bar" 
+          onClick={() => togglePlay()}>
+          {isPlaying ? <BiPause size={24} color="#fff" /> 
+                     : <BiPlay size={24} color="#fff" />}
         </button>
       </div>
       

@@ -111,6 +111,8 @@
   border-radius: 2px; 
   outline: none;
   cursor: pointer;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
 }
 
 .music-bar .progress-bar::-webkit-slider-thumb {
@@ -147,6 +149,8 @@
   outline: none;
   cursor: pointer;
   width: 80px;
+  padding-left: 0px;
+  padding-right: 0px;
 }
 
 .volume-slider::-webkit-slider-thumb {
