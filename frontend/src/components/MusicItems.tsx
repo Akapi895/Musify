@@ -43,7 +43,7 @@ export const PlaylistItem: React.FC<PlaylistProps> = ({
     <div className="playlist-card" onClick={handleClick}>
       <div className="item-cover">
         <img 
-          src={"https://play-lh.googleusercontent.com/QovZ-E3Uxm4EvjacN-Cv1LnjEv-x5SqFFB5BbhGIwXI_KorjFhEHahRZcXFC6P40Xg"}
+          src={"../../public/assets/avatar/playlist.png"}
           alt={name} 
         />
         <div className="play-overlay">
@@ -95,7 +95,7 @@ export const SongItem: React.FC<SongProps> = ({
       <div className={`song-card vertical ${isActive ? 'active-song' : ''}`} onClick={handleClick}>
         <div className="item-cover">
           <img 
-            src={cover_url || "https://www.shutterstock.com/image-photo/abstract-design-musical-note-symbol-600nw-1169623948.jpg"} 
+            src={cover_url || "../../public/assets/avatar/music.jpg"} 
             alt={title} 
           />
           <div className="play-overlay">
